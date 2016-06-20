@@ -1,0 +1,30 @@
+{
+  "name": "suman-utils",
+  "version": "0.0.1",
+  "description": "shared module within suman ecosystem",
+  "main": "index.js",
+  "scripts": {
+    "test": "suman"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ORESoftware/suman-utils.git"
+  },
+  "keywords": [
+    "utils",
+    "test",
+    "framework"
+  ],
+  "author": "Olegzander V.D.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ORESoftware/suman-utils/issues"
+  },
+  "homepage": "https://github.com/ORESoftware/suman-utils#readme",
+  "dependencies": {
+    "async": "^2.0.0-rc.6",
+    "colors": "^1.1.2",
+    "lodash": "^4.13.1",
+    "residence": "0.0.1"
+  }
+}
