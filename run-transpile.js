@@ -27,7 +27,7 @@ const testDirCopyDir = process.env.TEST_DIR_COPY_DIR;
 const targetDir = path.resolve(testDirCopyDir ? testDirCopyDir : (testDir + '-target'));
 
 if (process.env.SUMAN_DEBUG === 'yes') {
-	console.log(' SUMAN_DEBUG message (in suman-utils) => process.env =\n', util.inspect(process.env));
+	console.log(' SUMAN_DEBUG message (in suman-utils) => process.env =', util.inspect(process.env));
 }
 
 ////////////////////////////////////////////

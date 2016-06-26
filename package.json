@@ -2,7 +2,7 @@
   "name": "suman-utils",
   "version": "0.0.1",
   "description": "shared module within suman ecosystem",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "suman"
   },
