@@ -238,7 +238,15 @@ function run (paths, opts, cb) {
             console.log('\n', 'Babel-cli command:', cmd, '\n');
           }
 
-          cp.exec(cmd, cb);
+          cp.exec(cmd, function (err, stdout, stderr) {
+            if (err || String(stdout).match(/error/i) || String(stderr).match(/error/i)) {
+              cb('You may need to run $ suman --use-babel to install the' +
+                ' necessary babel dependencies in your project so suman can use them => \n' + (err.stack || err) || stdout || stderr);
+            }
+            else {
+              cb(null);
+            }
+          });
 
         }
       });
@@ -253,17 +261,29 @@ function run (paths, opts, cb) {
         return cb(err);
       }
 
-      console.log(' => testDirCopyDir:', testDirCopyDir);
+      if (process.env.SUMAN_DEBUG === 'yes') {
+        console.log(' => testDirCopyDir:', testDirCopyDir);
+        console.log(' => paths before array =>', util.inspect(paths));
+      }
 
-      fs.mkdir(String(testDirCopyDir), function (err) {  //make test-target dir in case it doesn't exist
+      paths = paths.map(item => {
+        return path.resolve(path.isAbsolute(item) ? item : (root + '/' + item));
+      });
 
-        if (err && !String(err.stack).match(/eexist/i)) {
+      if (process.env.SUMAN_DEBUG === 'yes') {
+        console.log(' => paths after array =>', util.inspect(paths));
+      }
+
+      //TODO: should be paths[0], need to build up directories for all paths
+      const dirsToBuild = sumanUtils.getArrayOfDirsToBuild(testDirCopyDir, paths[ 0 ]);
+
+      sumanUtils.buildDirs(dirsToBuild, function (err) {  //make test-target dir in case it doesn't exist
+
+        if (err) {
           cb(err);
         }
         else {
           async.map(paths, function (item, cb) {
-
-            item = path.resolve(path.isAbsolute(item) ? item : (root + '/' + item));
 
             if (opts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
               console.log('Item to be transpiled:', item);
@@ -306,7 +326,8 @@ function run (paths, opts, cb) {
 
             cp.exec(cmd, function (err, stdout, stderr) {
               if (err || String(stdout).match(/error/i) || String(stderr).match(/error/i)) {
-                cb(err || stdout || stderr);
+                cb('You may need to run "$ suman --use-babel" to install the' +
+                  ' necessary babel dependencies in your project so suman can use them => \n' + (err.stack || err) || stdout || stderr);
               }
               else {
                 cb(null, fsItemTemp)

@@ -4,7 +4,9 @@
   "description": "shared module within suman ecosystem",
   "main": "lib/index.js",
   "scripts": {
-    "test": "suman"
+    "test": "suman",
+    "remove-private-dirs": "git rm -r --ignore-unmatch private",
+    "remove-private-files": "git rm --ignore-unmatch exp*.js"
   },
   "repository": {
     "type": "git",
