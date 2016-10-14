@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
 const cp = require('child_process');
+const util = require('util');
+const assert = require('assert');
 
 //#npm
 const async = require('async');
@@ -16,6 +18,15 @@ const isFnRegex = /^\s*(?:function)?\*/;
 /////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = Object.freeze({
+
+    isSumanDebug: function(){
+       return process.env.SUMAN_DEBUG === 'yes';
+    },
+
+    runAssertionToCheckForSerialization: function runAssertionToCheckForSerialization(val) {
+        assert(['string', 'boolean', 'number'].indexOf(typeof val) >= 0,
+            ' => Suman usage error => You must serialize data called back from suman.once.pre.js value functions');
+    },
 
     getArrayOfDirsToBuild: function (testTargetPath, p) {
 
@@ -35,7 +46,7 @@ module.exports = Object.freeze({
 
         var unexpected = true;
 
-        if(fs.statSync(p).isFile()){
+        if (fs.statSync(p).isFile()) {
             items.pop(); // get rid of the first file
         }
 
@@ -160,14 +171,14 @@ module.exports = Object.freeze({
 
         var callable = true;
 
-        return function () {
+        return function callOnce(err) {
             if (callable) {
                 callable = false;
                 fn.apply(ctx, arguments);
             }
             else {
-                console.log(' => Suman warning => function was called more than once -' + fn.toString());
-                console.error(new Error('Suman error').stack);
+                console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
+                console.error(' => Suman warning => \n', err instanceof Error ? err.stack : util.inspect(err));
             }
 
         }
