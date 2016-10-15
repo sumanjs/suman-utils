@@ -24,6 +24,9 @@ module.exports = Object.freeze({
     },
 
     runAssertionToCheckForSerialization: function runAssertionToCheckForSerialization(val) {
+        if(!val){
+            return;
+        }
         assert(['string', 'boolean', 'number'].indexOf(typeof val) >= 0,
             ' => Suman usage error => You must serialize data called back from suman.once.pre.js value functions');
     },
