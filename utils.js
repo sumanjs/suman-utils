@@ -187,6 +187,25 @@ module.exports = Object.freeze({
         }
     },
 
+    onceAsync: function sumanOnce(ctx, fn) {
+
+        var callable = true;
+
+        return function callOnce(err) {
+            if (callable) {
+                callable = false;
+                process.nextTick(function(){
+                    fn.apply(ctx, arguments);
+                });
+            }
+            else {
+                console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
+                console.error(' => Suman warning => \n', err.stack || util.inspect(err));
+            }
+
+        }
+    },
+
     checkForEquality: function checkForArrayOfStringsEquality(arr1, arr2) {
 
         if (arr1.length !== arr2.length) {
