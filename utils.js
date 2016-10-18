@@ -187,12 +187,12 @@ module.exports = Object.freeze({
     onceAsync: function sumanOnce(ctx, fn) {
 
         var callable = true;
-
-        return function callOnce(err) {
+        return function callOnce() {
+            const args = arguments;
             if (callable) {
                 callable = false;
                 process.nextTick(function(){
-                    fn.apply(ctx, arguments);
+                    fn.apply(ctx, args);
                 });
             }
             else {
