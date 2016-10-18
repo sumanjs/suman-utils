@@ -40,8 +40,6 @@ module.exports = Object.freeze({
         const l = path.normalize(path.sep + testTargetPath).split(path.sep).length;
         const items = path.normalize(path.sep + p).split(path.sep);
 
-        console.log('items:', items);
-
         if (process.env.SUMAN_DEBUG === 'yes') {
             console.log('length of testTargetPath:', l);
             console.log('items length:', items.length);
@@ -57,7 +55,6 @@ module.exports = Object.freeze({
             unexpected = false;
             temp.unshift(path.normalize(items.slice(l).join(path.sep)));
             items.pop();
-            console.log('temp:', temp);
         }
 
         if (unexpected) {
@@ -75,7 +72,7 @@ module.exports = Object.freeze({
 
             fs.mkdir(item, function (err) {
                 if (err && !String(err.stack).match(/eexist/i)) {
-                    console.log(err.stack || err);
+                    console.error(err.stack || err);
                     cb(err);
                 }
                 else {
