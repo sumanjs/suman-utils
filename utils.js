@@ -19,12 +19,12 @@ const isFnRegex = /^\s*(?:function)?\*/;
 
 module.exports = Object.freeze({
 
-    isSumanDebug: function(){
-       return process.env.SUMAN_DEBUG === 'yes';
+    isSumanDebug: function () {
+        return process.env.SUMAN_DEBUG === 'yes';
     },
 
     runAssertionToCheckForSerialization: function runAssertionToCheckForSerialization(val) {
-        if(!val){
+        if (!val) {
             return;
         }
         assert(['string', 'boolean', 'number'].indexOf(typeof val) >= 0,
@@ -136,8 +136,8 @@ module.exports = Object.freeze({
 
     },
 
-    checkForValInStr: function (str, regex) {   //used primarily to check if 'done' literal is in fn.toString()
-        return ((String(str).match(regex) || []).length > 1);
+    checkForValInStr: function (str, regex, count) {   //used primarily to check if 'done' literal is in fn.toString()
+        return ((String(str).match(regex) || []).length > (count === 0 ? 0 : (count || 1)));
     },
 
     isArrowFunction: function (fn) { //TODO this will not work for async functions!
@@ -191,7 +191,7 @@ module.exports = Object.freeze({
             const args = arguments;
             if (callable) {
                 callable = false;
-                process.nextTick(function(){
+                process.nextTick(function () {
                     fn.apply(ctx, args);
                 });
             }
