@@ -21,13 +21,12 @@ const sumanUtils = require('./utils');
 
 const root = process.env.SUMAN_PROJECT_ROOT;
 
+// these values were originally assigned in suman/index.js,
+// were then passed to suman server, which then required this file
 const testDir = process.env.TEST_DIR;
 const testSrcDir = process.env.TEST_SRC_DIR;
 const testTargetDir = process.env.TEST_TARGET_DIR;
-
 const testTargetDirLength = String(testTargetDir).split(path.sep).length;
-
-// const targetDir = path.resolve(testDirCopyDir ? testDirCopyDir : (testDir + '-target'));
 
 if (process.env.SUMAN_DEBUG === 'yes') {
     console.log(' SUMAN_DEBUG message (in suman-utils) => process.env =', util.inspect(process.env));
