@@ -142,7 +142,7 @@ function run(paths, opts, cb) {
                     + ' --copy-files';
 
                 if (opts.verbose) {
-                    console.log('\n', 'Babel-cli command:', cmd1, '\n');
+                    console.log('\n', colors.cyan.bgBlack(' => Babel-cli command will be run:\n'), colors.yellow.bgBlack(cmd1), '\n');
                 }
 
                 cp.exec(cmd1, function (err) {
@@ -237,8 +237,8 @@ function run(paths, opts, cb) {
             else {
 
                 if (opts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-                    console.log(' => Root of project:', root);
-                    console.log(' => "testTargetDir":', testTargetDir);
+                    console.log(' => Root of project => ', root);
+                    console.log(' => "testTargetDir" => ', testTargetDir);
                 }
 
                 async.map(paths, function (item, cb) {
@@ -250,7 +250,6 @@ function run(paths, opts, cb) {
                         console.log(' => Item to be transpiled:', item);
                         console.log('fsItem:', fsItem);
                     }
-
 
                     var cmd;
                     try {
@@ -268,7 +267,8 @@ function run(paths, opts, cb) {
                         else {
 
                             cmd = 'cd ' + root + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
-                            console.log(' ' + colors.bgCyan.white.bold(' => Test dir will be transpiled to =>'), '\n', colors.bgMagenta.white(fsItem));
+                            console.log(' ' + colors.bgMagenta.cyan.bold(' => Test dir will be transpiled to => '), '\n',
+                                colors.bgMagenta.white(' ' + fsItem + ' '));
                         }
 
                     }
@@ -277,13 +277,15 @@ function run(paths, opts, cb) {
                     }
 
                     if (opts.verbose) {
-                        console.log('\n', 'Babel-cli command:', cmd, '\n');
+                        console.log('\n', colors.cyan.bgBlack(' => The following "babel-cli" command will be run:\n'),
+                            colors.yellow.bgBlack(cmd), '\n');
                     }
 
                     cp.exec(cmd, function (err, stdout, stderr) {
                         if (err || String(stdout).match(/error/i) || String(stderr).match(/error/i)) {
                             cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
-                                    ' necessary babel dependencies in your project so suman can use them => ') + '\n' + (err.stack || err) || stdout || stderr);
+                                    ' necessary babel dependencies in your project so suman can use them => ') + '\n'
+                                + (err.stack || err) || stdout || stderr);
                         }
                         else {
                             cb(null, fsItemTemp)
