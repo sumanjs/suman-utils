@@ -94,7 +94,7 @@ module.exports = Object.freeze({
 
     removeSharedRootPath: function (paths) {
 
-        if (paths.length < 2) {
+        if (paths.length < 2) {   //  paths = ['/a/single/path']
             return paths.map(function (p) {
                 return [p, path.basename(p)];
             });
