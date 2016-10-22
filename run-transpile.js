@@ -267,7 +267,7 @@ function run(paths, opts, cb) {
                         else {
 
                             cmd = 'cd ' + root + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
-                            console.log(' ' + colors.bgMagenta.cyan.bold(' => Test dir will be transpiled to => '), '\n',
+                            console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Test dir will be transpiled to => '), '\n',
                                 colors.bgMagenta.white(' ' + fsItem + ' '));
                         }
 
