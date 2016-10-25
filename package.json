@@ -1,6 +1,6 @@
 {
   "name": "suman-utils",
-  "version": "0.0.7302",
+  "version": "0.0.7303",
   "description": "shared module within suman ecosystem",
   "main": "lib/index.js",
   "scripts": {
