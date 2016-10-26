@@ -1,7 +1,7 @@
 {
   "name": "suman-utils",
-  "version": "0.0.7303",
-  "description": "shared module within suman ecosystem",
+  "version": "0.0.7304",
+  "description": "Shared module within the Suman test runner ecosystem",
   "main": "lib/index.js",
   "scripts": {
     "test": "suman",
@@ -28,5 +28,6 @@
     "colors": "^1.1.2",
     "lodash": "^4.13.1",
     "residence": "0.0.1"
-  }
+  },
+  "devDependencies": {}
 }
