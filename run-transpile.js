@@ -1,7 +1,3 @@
-/**
- * Created by denman on 5/23/2016.
- */
-
 
 //core
 const cp = require('child_process');
