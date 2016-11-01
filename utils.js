@@ -92,6 +92,10 @@ module.exports = Object.freeze({
         return new Array(5).join(' ');  //yields 4 whitespace chars
     },
 
+    padWithXSpaces: function (x) {
+        return new Array(x + 1).join(' ');  //yields x whitespace chars
+    },
+
     removeSharedRootPath: function (paths) {
 
         if (paths.length < 2) {   //  paths = ['/a/single/path']
