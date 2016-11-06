@@ -15,6 +15,7 @@ const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
 
+
 /////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = Object.freeze({
