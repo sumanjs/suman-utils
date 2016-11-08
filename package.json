@@ -1,6 +1,6 @@
 {
   "name": "suman-utils",
-  "version": "0.0.7306",
+  "version": "0.0.7307",
   "description": "Shared module within the Suman test runner ecosystem",
   "main": "lib/index.js",
   "scripts": {
