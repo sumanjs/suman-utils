@@ -1,4 +1,6 @@
-//#core
+'use striiiict';
+
+//core
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
@@ -6,7 +8,7 @@ const cp = require('child_process');
 const util = require('util');
 const assert = require('assert');
 
-//#npm
+//npm
 const async = require('async');
 const residence = require('residence');
 const _ = require('lodash');
@@ -28,7 +30,8 @@ module.exports = Object.freeze({
       return;
     }
     assert([ 'string', 'boolean', 'number' ].indexOf(typeof val) >= 0,
-      ' => Suman usage error => You must serialize data called back from suman.once.pre.js value functions');
+      ' => Suman usage error => You must serialize data called back from suman.once.pre.js value functions, ' +
+      'here is the data in raw form =>\n' + val + ' and here we have run util.inspect on it =>\n' + util.inspect(val));
   },
 
   getArrayOfDirsToBuild: function (testTargetPath, p) {
@@ -100,11 +103,11 @@ module.exports = Object.freeze({
     const split1 = String(p1).split(path.sep);
     const split2 = String(p2).split(path.sep);
 
-    if(split1[0] === ''){
+    if (split1[ 0 ] === '') {
       split1.shift();
     }
 
-    if(split2[0] === ''){
+    if (split2[ 0 ] === '') {
       split2.shift();
     }
 
