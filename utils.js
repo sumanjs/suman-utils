@@ -99,6 +99,27 @@ module.exports = Object.freeze({
     return new Array(x + 1).join(' ');  //yields x whitespace chars
   },
 
+  removePath: function (p1, p2) {
+
+    assert(path.isAbsolute(p1) && path.isAbsolute(p2), 'Please pass in absolute paths');
+
+    const split1 = String(p1).split(path.sep);
+    const split2 = String(p2).split(path.sep);
+
+    const newPath = [];
+
+    const max = Math.max(split1.length, split2.length);
+
+    for (var i = 0; i < max; i++) {
+      if (split1[ i ] !== split2[ i ]) {
+        newPath.push(split1[ i ]);
+      }
+    }
+
+    return newPath.join(path.sep);
+
+  },
+
   findSharedPath: function (p1, p2) {
     const split1 = String(p1).split(path.sep);
     const split2 = String(p2).split(path.sep);
