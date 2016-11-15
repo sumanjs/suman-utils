@@ -101,7 +101,8 @@ module.exports = Object.freeze({
 
   removePath: function (p1, p2) {
 
-    assert(path.isAbsolute(p1) && path.isAbsolute(p2), 'Please pass in absolute paths');
+    assert(path.isAbsolute(p1) && path.isAbsolute(p2), 'Please pass in absolute paths, ' +
+      'p1 => ' + util.inspect(p1) + ', p2 => ' + util.inspect(p2));
 
     const split1 = String(p1).split(path.sep);
     const split2 = String(p2).split(path.sep);
