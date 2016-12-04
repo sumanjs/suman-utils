@@ -97,7 +97,7 @@ function run(paths, opts, cb) {
     const testTargetDirLength = String(testTargetDir).split(path.sep).length;
 
 
-    const babelExec = opts.babelExec || ' ~/.suman/node_modules/.bin/babel';
+    const babelExec = opts.babelExec || ' ~/.suman/node_modules/.bin/babel ';
 
     assert.equal(testSrcDirLength, testTargetDirLength,
         ' => Suman usage error => "testSrcDir" and "testTargetDir" must be at the same level in your project => \n' +
