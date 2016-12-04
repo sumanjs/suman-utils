@@ -20,7 +20,6 @@ git add .
 git add -A
 git commit -am "publish/release:${GIT_COMMIT_MSG}"
 git push public HEAD:master -f
-git remote rm publish
 git checkout dev
 git branch -D temp
 npm publish .
