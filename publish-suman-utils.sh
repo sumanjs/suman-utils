@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-GIT_COMMIT_MSG = $1 # first argument to script
+GIT_COMMIT_MSG=$1 # first argument to script
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [[ "$BRANCH" != "dev" ]]; then
@@ -13,15 +13,14 @@ git add .
 git add -A
 git commit -am "publish/release:${GIT_COMMIT_MSG}"
 git push
-git checkout -b master
+git checkout -b temp
 npm run remove-private-dirs
 npm run remove-private-files
 git add .
 git add -A
 git commit -am "publish/release:${GIT_COMMIT_MSG}"
-git remote add publish git@github.com:ORESoftware/suman-utils.git
-git push publish master -f
+git push public HEAD:master -f
 git remote rm publish
 git checkout dev
-git branch -D master
+git branch -D temp
 npm publish .
