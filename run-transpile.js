@@ -99,6 +99,8 @@ function run(paths, opts, cb) {
 
     const babelExec = opts.babelExec || ' ~/.suman/node_modules/.bin/babel ';
 
+    console.log(colors.magenta(' => Istanbul executable located here => '), colors.cyan(babelExec));
+
     assert.equal(testSrcDirLength, testTargetDirLength,
         ' => Suman usage error => "testSrcDir" and "testTargetDir" must be at the same level in your project => \n' +
         'See: http://oresoftware.github.io/suman');
@@ -286,7 +288,7 @@ function run(paths, opts, cb) {
                             });
 
                             cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
-                                ' necessary babel dependencies in your project so suman can use them => '));
+                                ' necessary babel dependencies in your project so suman can use them...'));
 
                         }
                         else {
