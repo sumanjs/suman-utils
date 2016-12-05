@@ -264,7 +264,7 @@ function run(paths, opts, cb) {
                             cmd = 'cd ' + projectRoot + ' && ' + babelExec + item + ' --out-dir ' + fsItem + ' --copy-files';
                             // cmd = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
                             console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Test dir will be transpiled to => '), '\n',
-                                colors.bgMagenta.white(' ' + fsItem + ' '));
+                                colors.bgMagenta.black.bold(' ' + fsItem + ' '));
                         }
 
                     }
