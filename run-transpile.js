@@ -29,67 +29,10 @@ if (process.env.SUMAN_DEBUG === 'yes') {
 
 ////////////////////////////////////////////
 
-function calculateLength() {
+const mapToTargetDir = sumanUtils.mapToTargetDir;
 
-}
+////////////////////////////////////////////
 
-function mapToTargetDir(item) {
-
-    item = path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
-
-    const itemSplit = String(item).split(path.sep);
-
-    if (global.sumanOpts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-        console.log('itemSplit:', itemSplit);
-    }
-
-    const originalLength = itemSplit.length;
-
-    const paths = sumanUtils.removeSharedRootPath([projectRoot, item]);
-
-    const temp = paths[1][1];
-
-    if (global.sumanOpts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-        console.log('originalLength:', originalLength);
-        console.log('testTargetDirLength:', testTargetDirLength);
-        console.log('temp path:', temp);
-    }
-
-    // temp path: /test/test-src/example.js
-    // splitted before shift: [ '', 'test', 'test-src', 'example.js' ]
-    // splitted after shift: [ 'example.js' ]
-
-    const splitted = temp.split(path.sep);
-    splitted.shift(); // get rid of pesky ['', first element
-
-    if (process.env.SUMAN_DEBUG === 'yes') {
-        console.log('splitted before shift:', splitted);
-    }
-
-    while ((splitted.length + testTargetDirLength) > originalLength) {
-        splitted.shift();
-    }
-
-    if (process.env.SUMAN_DEBUG === 'yes') {
-        console.log('splitted after shift:', splitted);
-    }
-
-    const joined = splitted.join(path.sep);
-
-    if (global.sumanOpts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-        console.log('pre-resolved:', joined);
-    }
-
-    if (process.env.SUMAN_DEBUG === 'yes') {
-        console.log('joined:', joined);
-    }
-
-    return {
-        originalPath: item,
-        targetPath: path.resolve(testTargetDir + '/' + joined)
-        // targetPath: path.resolve(targetDir)
-    }
-}
 
 function run(paths, opts, cb) {
 
@@ -97,7 +40,18 @@ function run(paths, opts, cb) {
     const testTargetDirLength = String(testTargetDir).split(path.sep).length;
 
 
-    const babelExec = opts.babelExec || ' ~/.suman/node_modules/.bin/babel ';
+    var babelExec;
+
+    try {
+        babelExec = opts.babelExec || path.resolve(require.resolve('babel-cli') + '/../../.bin/babel');
+        fs.lstat(babelExec);
+    }
+    catch (err) {
+        console.error(colors.cyan(' => Suman error finding Babel executable => '), colors.red(err.stack || err));
+        console.error(colors.red(' => Warning, Suman will attempt to use a globally installed version of Babel.'));
+        babelExec = cp.execSync('which babel');
+    }
+
 
     console.log(colors.magenta(' => Istanbul executable located here => '), colors.cyan(babelExec));
 
@@ -131,10 +85,7 @@ function run(paths, opts, cb) {
             }
             else {
 
-                const cmd1 = 'cd ' + projectRoot + ' && ' + babelExec + testSrcDir + ' --out-dir ' + testTargetDir
-                    + ' --copy-files';
-                // const cmd1 = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + testSrcDir + ' --out-dir ' + testTargetDir
-                //   + ' --copy-files';
+                const cmd1 = ['cd', projectRoot, '&&', babelExec, testSrcDir, '--out-dir', testTargetDir, '--copy-files'].join(' ');
 
                 if (opts.verbose) {
                     console.log('\n', colors.cyan.bgBlack(' => Babel-cli command will be run:\n'), colors.yellow.bgBlack(cmd1), '\n');
@@ -257,23 +208,23 @@ function run(paths, opts, cb) {
 
                             if (path.extname(item) === '.js' || path.extname(item) === '.jsx') {
 
-                                cmd = 'cd ' + projectRoot + ' &&  ' + babelExec + item + ' --out-file ' + fsItem;
-                                // cmd = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + item + ' --out-file ' + fsItem;
-                                if (opts.verbose) {
-                                    console.log('\n ' + colors.bgCyan.magenta.bold(' => Test file will be transpiled to => ' + fsItem));
+                                cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-file', fsItem].join(' ');
+
+                                if (true || opts.verbose) {
+                                    console.log('\n ' + colors.bgCyan.magenta.bold(' => Test file will be transpiled to => ') + colors.bgCyan.black(fsItem));
                                 }
                             }
                             else {
-                                cmd = 'cd ' + projectRoot + ' && cp ' + item + ' ' + fsItem;
+                                cmd = ['cd', projectRoot, '&&', 'cp', item, fsItem].join(' ');
                                 console.log('\n ' + colors.bgCyan.magenta.bold(' => Test fixture file will be copied to => ' + fsItem));
                             }
                         }
                         else {
 
-                            cmd = 'cd ' + projectRoot + ' && ' + babelExec + item + ' --out-dir ' + fsItem + ' --copy-files';
+                            cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-dir', fsItem, '--copy-files'].join(' ');
                             // cmd = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
-                            console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Test dir will be transpiled to => '), '\n',
-                                colors.bgMagenta.black.bold(' ' + fsItem + ' '));
+                            console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Directory will be transpiled to => '), '\n',
+                                colors.bgWhite.black.bold(' ' + fsItem + ' '));
                         }
 
 
