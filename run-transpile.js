@@ -234,7 +234,8 @@ function run(paths, opts, cb) {
                     console.log(' => "testTargetDir" => ', testTargetDir);
                 }
 
-                async.map(paths, function (item, cb) {
+                // arbitrarily limit to 5 concurrent "babel processes".
+                async.mapLimit(paths, 5, function (item, cb) {
 
                     const fsItemTemp = mapToTargetDir(item);
                     const fsItem = fsItemTemp.targetPath;
@@ -244,9 +245,15 @@ function run(paths, opts, cb) {
                         console.log('fsItem:', fsItem);
                     }
 
-                    var cmd;
-                    try {
-                        if (fs.statSync(item).isFile()) {
+                    fs.stat(item, function (err, stats) {
+
+                        if (err) {
+                            return cb(err);
+                        }
+
+                        if (stats.isFile()) {
+
+                            var cmd;
 
                             if (path.extname(item) === '.js' || path.extname(item) === '.jsx') {
 
@@ -269,32 +276,30 @@ function run(paths, opts, cb) {
                                 colors.bgMagenta.black.bold(' ' + fsItem + ' '));
                         }
 
-                    }
-                    catch (err) {
-                        return cb(err, []);
-                    }
 
-                    if (opts.verbose) {
-                        console.log('\n', colors.cyan.bgBlack(' => The following "babel-cli" command will be run:\n'),
-                            colors.yellow.bgBlack(cmd), '\n');
-                    }
-
-                    cp.exec(cmd, function (err, stdout, stderr) {
-                        if (err) {
-                            [err, stdout, stderr].forEach(function (e) {
-                                if (e) {
-                                    console.error(typeof e === 'string' ? e : util.inspect(e.stack || e));
-                                }
-                            });
-
-                            cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
-                                ' necessary babel dependencies in your project so suman can use them...'));
-
+                        if (opts.verbose) {
+                            console.log('\n', colors.cyan.bgBlack(' => The following "babel-cli" command will be run:\n'),
+                                colors.yellow.bgBlack(cmd), '\n');
                         }
-                        else {
-                            cb(null, fsItemTemp)
-                        }
-                    });
+
+                        cp.exec(cmd, function (err, stdout, stderr) {
+                            if (err) {
+                                [err, stdout, stderr].forEach(function (e) {
+                                    if (e) {
+                                        console.error(typeof e === 'string' ? e : util.inspect(e.stack || e));
+                                    }
+                                });
+
+                                cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
+                                    ' necessary babel dependencies in your project so suman can use them...'));
+
+                            }
+                            else {
+                                cb(null, fsItemTemp)
+                            }
+                        });
+                    })
+
 
                 }, cb);
             }
