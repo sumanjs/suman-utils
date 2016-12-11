@@ -8,18 +8,35 @@ if [[ "$BRANCH" != "dev" ]]; then
   exit 1;
 fi
 
-npm version patch --force -m "Upgrade for several reasons"
+
+if [ "$2" = "publish" ]; then
+   npm version patch --force -m "Upgrade for several reasons" &&    # bump version
+   echo "bumped version"
+else
+  echo "note that we are *not* publishing to NPM"
+fi
+
+
 git add .
 git add -A
-git commit -am "publish/release:${GIT_COMMIT_MSG}"
+git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}"
 git push
-git checkout -b temp
-npm run remove-private-dirs
-npm run remove-private-files
+git checkout -b master
+# remove private directories
+git rm -r --ignore-unmatch private
+# remove private files
+git rm --ignore-unmatch exp*.js
 git add .
 git add -A
-git commit -am "publish/release:${GIT_COMMIT_MSG}"
+git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}"
 git push public HEAD:master -f
+
+if [ "$2" = "publish" ]; then
+   npm publish . &&
+   echo "published to NPM successfully"
+else
+  echo "note that we are *not* publishing to NPM"
+fi
+
 git checkout dev
-git branch -D temp
-npm publish .
+
