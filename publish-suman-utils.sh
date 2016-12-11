@@ -17,19 +17,19 @@ else
 fi
 
 
-git add .
-git add -A
-git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}"
-git push
-git checkout -b master
+git add . &&
+git add -A &&
+git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}" &&
+git push &&
+git checkout -b temp &&
 # remove private directories
-git rm -r --ignore-unmatch private
+git rm -r --ignore-unmatch private &&
 # remove private files
-git rm --ignore-unmatch exp*.js
-git add .
-git add -A
-git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}"
-git push public HEAD:master -f
+git rm --ignore-unmatch exp*.js &&
+git add . &&
+git add -A &&
+git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}" &&
+git push public HEAD:master -f &&
 
 if [ "$2" = "publish" ]; then
    npm publish . &&
@@ -38,5 +38,6 @@ else
   echo "note that we are *not* publishing to NPM"
 fi
 
-git checkout dev
+git checkout dev &&
+git branch -D temp
 
