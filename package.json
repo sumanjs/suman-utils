@@ -1,12 +1,10 @@
 {
   "name": "suman-utils",
-  "version": "0.0.73093",
+  "version": "0.0.73094",
   "description": "Shared module within the Suman test runner ecosystem",
   "main": "lib/index.js",
   "scripts": {
-    "test": "suman",
-    "remove-private-dirs": "git rm -r --ignore-unmatch private",
-    "remove-private-files": "git rm --ignore-unmatch exp*.js"
+    "test": "suman"
   },
   "repository": {
     "type": "git",
