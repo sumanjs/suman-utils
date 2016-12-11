@@ -19,6 +19,10 @@ fi
 
 git add . &&
 git add -A &&
+git commit --allow-empty -am "pre:${GIT_COMMIT_MSG}" &&
+git pull &&
+git add . &&
+git add -A &&
 git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}" &&
 git push &&
 git checkout -b temp &&
@@ -29,7 +33,7 @@ git rm --ignore-unmatch exp*.js &&
 git add . &&
 git add -A &&
 git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}" &&
-git push public HEAD:master -f &&
+git push origin HEAD:master -f &&
 
 if [ "$2" = "publish" ]; then
    npm publish . &&
