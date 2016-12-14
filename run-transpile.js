@@ -1,3 +1,10 @@
+'use striiiiict';
+
+
+process.on('warning', function (w) {
+    console.error('\n', ' => Suman warning => ', w.stack || w, '\n');
+});
+
 //core
 const cp = require('child_process');
 const fs = require('fs');
@@ -8,11 +15,12 @@ const util = require('util');
 //npm
 const async = require('async');
 const colors = require('colors/safe');
+const debug = require('suman-debug')('s:utils-transpile');
 
 //project
 const sumanUtils = require('./utils');
 
-///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 const projectRoot = process.env.SUMAN_PROJECT_ROOT;
 
@@ -23,9 +31,8 @@ const testSrcDir = process.env.TEST_SRC_DIR;
 const testTargetDir = process.env.TEST_TARGET_DIR;
 const testTargetDirLength = String(testTargetDir).split(path.sep).length;
 
-if (process.env.SUMAN_DEBUG === 'yes') {
-    console.log(' SUMAN_DEBUG message (in suman-utils) => process.env =', util.inspect(process.env));
-}
+
+debug(['=> (in suman-utils) => process.env =', process.env]);
 
 ////////////////////////////////////////////
 
@@ -36,6 +43,7 @@ const mapToTargetDir = sumanUtils.mapToTargetDir;
 
 function run(paths, opts, cb) {
 
+
     const testSrcDirLength = String(testSrcDir).split(path.sep).length;
     const testTargetDirLength = String(testTargetDir).split(path.sep).length;
 
@@ -43,8 +51,8 @@ function run(paths, opts, cb) {
     var babelExec;
 
     try {
-        babelExec = opts.babelExec || path.resolve(require.resolve('babel-cli') + '/../../.bin/babel');
-        fs.lstat(babelExec);
+        babelExec = opts.babelExec || path.resolve(require.resolve('babel-cli'), '..', '..', '.bin/babel');
+        fs.lstatSync(babelExec);
     }
     catch (err) {
         console.error(colors.cyan(' => Suman error finding Babel executable => '), colors.red(err.stack || err));
@@ -53,7 +61,7 @@ function run(paths, opts, cb) {
     }
 
 
-    console.log(colors.magenta(' => Istanbul executable located here => '), colors.cyan(babelExec));
+    debug([' => Istanbul executable located here => ', babelExec]);
 
     assert.equal(testSrcDirLength, testTargetDirLength,
         ' => Suman usage error => "testSrcDir" and "testTargetDir" must be at the same level in your project => \n' +
@@ -61,9 +69,7 @@ function run(paths, opts, cb) {
 
     if (opts.all) {   //TODO: opts.all should just be opts.recursive ??
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('opts.all for transpile is true');
-        }
+        debug(['opts.all for transpile is true']);
 
         try {
             assert(testDir && typeof testDir === 'string');
@@ -127,9 +133,9 @@ function run(paths, opts, cb) {
     }
     else {  //opts.all == false
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('opts.all for transpile is false');
-        }
+
+        debug(['opts.all for transpile is false']);
+
 
         // here we want two things to be faster:
         // no runner, so we save 100ms
@@ -142,9 +148,9 @@ function run(paths, opts, cb) {
         //
         // dirs = [testDir];
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('opts.sameDir for transpile is false');
-        }
+
+        debug(['opts.sameDir for transpile is false']);
+
 
         try {
             assert(paths.length > 0, colors.bgBlack.yellow(' => Suman error => please pass at least one test file path in your command.'));
@@ -153,111 +159,111 @@ function run(paths, opts, cb) {
             return cb(err);
         }
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log(' => targetDir:', testTargetDir);
-            console.log(' => paths before array =>', util.inspect(paths));
+
+        debug([' => targetDir:', testTargetDir]);
+        debug([' => paths before array =>', paths]);
+    }
+
+
+    paths = paths.map(item => {
+        return path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
+    });
+
+
+    debug([' => paths after array =>', paths]);
+
+
+    //TODO: should be paths[0], need to build up directories for all paths
+    const dirsToBuild = sumanUtils.getArrayOfDirsToBuild(testTargetDir, paths[0]);
+
+
+    debug([' => dirsToBuild:', dirsToBuild]);
+
+
+    sumanUtils.buildDirs(dirsToBuild, function (err) {  //make test-target dir in case it doesn't exist
+
+        if (err) {
+            cb(err);
         }
+        else {
 
-        paths = paths.map(item => {
-            return path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
-        });
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log(' => paths after array =>', util.inspect(paths));
-        }
+            debug([' => Root of project => ', projectRoot]);
+            debug([' => "testTargetDir" => ', testTargetDir]);
 
-        //TODO: should be paths[0], need to build up directories for all paths
-        const dirsToBuild = sumanUtils.getArrayOfDirsToBuild(testTargetDir, paths[0]);
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('dirsToBuild:', dirsToBuild);
-        }
+            // arbitrarily limit to 5 concurrent "babel processes".
+            async.mapLimit(paths, 5, function (item, cb) {
 
-        sumanUtils.buildDirs(dirsToBuild, function (err) {  //make test-target dir in case it doesn't exist
+                const fsItemTemp = mapToTargetDir(item);
+                const fsItem = fsItemTemp.targetPath;
 
-            if (err) {
-                cb(err);
-            }
-            else {
 
-                if (opts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-                    console.log(' => Root of project => ', projectRoot);
-                    console.log(' => "testTargetDir" => ', testTargetDir);
-                }
+                debug([' => Item to be transpiled:', item]);
+                debug([' => fsItem:', fsItem]);
 
-                // arbitrarily limit to 5 concurrent "babel processes".
-                async.mapLimit(paths, 5, function (item, cb) {
+                fs.stat(item, function (err, stats) {
 
-                    const fsItemTemp = mapToTargetDir(item);
-                    const fsItem = fsItemTemp.targetPath;
-
-                    if (opts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-                        console.log(' => Item to be transpiled:', item);
-                        console.log('fsItem:', fsItem);
+                    if (err) {
+                        return cb(err);
                     }
 
-                    fs.stat(item, function (err, stats) {
+                    if (stats.isFile()) {
 
-                        if (err) {
-                            return cb(err);
-                        }
+                        var cmd;
 
-                        if (stats.isFile()) {
+                        if (path.extname(item) === '.js' || path.extname(item) === '.jsx') {
 
-                            var cmd;
+                            cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-file', fsItem].join(' ');
 
-                            if (path.extname(item) === '.js' || path.extname(item) === '.jsx') {
-
-                                cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-file', fsItem].join(' ');
-
-                                if (true || opts.verbose) {
-                                    console.log('\n ' + colors.bgCyan.magenta.bold(' => Test file will be transpiled to => ') + colors.bgCyan.black(fsItem));
-                                }
-                            }
-                            else {
-                                cmd = ['cd', projectRoot, '&&', 'cp', item, fsItem].join(' ');
-                                console.log('\n ' + colors.bgCyan.magenta.bold(' => Test fixture file will be copied to => ' + fsItem));
+                            if (true || opts.verbose) {
+                                console.log('\n ' + colors.bgCyan.magenta.bold(' => Test file will be transpiled to => ') + colors.bgCyan.black(fsItem));
                             }
                         }
                         else {
-
-                            cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-dir', fsItem, '--copy-files'].join(' ');
-                            // cmd = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
-                            console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Directory will be transpiled to => '), '\n',
-                                colors.bgWhite.black.bold(' ' + fsItem + ' '));
+                            cmd = ['cd', projectRoot, '&&', 'cp', item, fsItem].join(' ');
+                            console.log('\n ' + colors.bgCyan.magenta.bold(' => Test fixture file will be copied to => ' + fsItem));
                         }
+                    }
+                    else {
+
+                        cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-dir', fsItem, '--copy-files'].join(' ');
+                        // cmd = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
+                        console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Directory will be transpiled to => '), '\n',
+                            colors.bgWhite.black.bold(' ' + fsItem + ' '));
+                    }
 
 
-                        if (opts.verbose) {
-                            console.log('\n', colors.cyan.bgBlack(' => The following "babel-cli" command will be run:\n'),
-                                colors.yellow.bgBlack(cmd), '\n');
+                    if (opts.verbose) {
+                        console.log('\n', colors.cyan.bgBlack(' => The following "babel-cli" command will be run:\n'),
+                            colors.yellow.bgBlack(cmd), '\n');
+                    }
+
+                    cp.exec(cmd, function (err, stdout, stderr) {
+                        if (err) {
+                            [err, stdout, stderr].forEach(function (e) {
+                                if (e) {
+                                    console.error(typeof e === 'string' ? e : util.inspect(e.stack || e));
+                                }
+                            });
+
+                            cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
+                                ' necessary babel dependencies in your project so suman can use them...'));
+
                         }
-
-                        cp.exec(cmd, function (err, stdout, stderr) {
-                            if (err) {
-                                [err, stdout, stderr].forEach(function (e) {
-                                    if (e) {
-                                        console.error(typeof e === 'string' ? e : util.inspect(e.stack || e));
-                                    }
-                                });
-
-                                cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
-                                    ' necessary babel dependencies in your project so suman can use them...'));
-
-                            }
-                            else {
-                                cb(null, fsItemTemp)
-                            }
-                        });
-                    })
+                        else {
+                            cb(null, fsItemTemp)
+                        }
+                    });
+                })
 
 
-                }, cb);
-            }
+            }, cb);
+        }
 
-        });
+    });
 
-    }
+}
 
 }
 

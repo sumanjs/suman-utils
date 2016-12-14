@@ -25,7 +25,8 @@
     "async": "^2.0.0-rc.6",
     "colors": "^1.1.2",
     "lodash": "^4.13.1",
-    "residence": "0.0.1"
+    "residence": "0.0.1",
+    "suman-debug": "0.0.101"
   },
   "devDependencies": {}
 }
