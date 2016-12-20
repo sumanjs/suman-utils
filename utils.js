@@ -267,8 +267,23 @@ const sumanUtils = module.exports = Object.freeze({
         return ((String(str).match(regex) || []).length > (count === 0 ? 0 : (count || 1)));
     },
 
+    isGeneratorFn: function (fn) {
+
+        if (typeof fn !== 'function') {
+            return false;
+        }
+        var fnStr = toStr.call(fn);
+        return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
+        || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
+
+    },
+
     isArrowFunction: function (fn) { //TODO this will not work for async functions!
-        return fn.toString().indexOf('function') !== 0;
+        return String(fn).indexOf('function') !== 0;
+    },
+
+    isAsyncFn: function (fn) {
+        return String(fn).indexOf('async ') === 0;
     },
 
     getStringArrayOfArgLiterals: function (fn) {
@@ -348,16 +363,6 @@ const sumanUtils = module.exports = Object.freeze({
         return true;
     },
 
-    isGeneratorFn: function isGeneratorFn(fn) {
-
-        if (typeof fn !== 'function') {
-            return false;
-        }
-        var fnStr = toStr.call(fn);
-        return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
-        || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
-
-    },
 
     arrayHasDuplicates: function arrayHasDuplicates(a) {
         return _.uniq(a).length !== a.length;
