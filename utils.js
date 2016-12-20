@@ -1,5 +1,11 @@
 'use striiiict';
 
+
+process.on('warning', function (w) {
+    console.error('\n', ' => Suman warning => ', w.stack || w, '\n');
+});
+
+
 //core
 const fs = require('fs');
 const path = require('path');
@@ -12,10 +18,12 @@ const assert = require('assert');
 const async = require('async');
 const residence = require('residence');
 const _ = require('lodash');
+const debug = require('suman-debug')('s:utils');
 
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,57 +42,42 @@ const sumanUtils = module.exports = Object.freeze({
 
         item = path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
 
-        const itemSplit = String(item).split(path.sep);
+        var itemSplit = String(item).split(path.sep);
+        itemSplit = itemSplit.filter(i => i); // get rid of pesky ['', first element
 
-        if (global.sumanOpts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-            console.log('itemSplit:', itemSplit);
-        }
+        debug('itemSplit:', itemSplit);
 
         const originalLength = itemSplit.length;
-
         const paths = sumanUtils.removeSharedRootPath([projectRoot, item]);
-
         const temp = paths[1][1];
 
-        if (global.sumanOpts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-            console.log('originalLength:', originalLength);
-            console.log('testTargetDirLength:', testTargetDirLength);
-            console.log('temp path:', temp);
-        }
+        debug(' => originalLength:', originalLength);
+        debug(' => testTargetDirLength:', testTargetDirLength);
+        debug(' => temp path:', temp);
 
-        // temp path: /test/test-src/example.js
-        // splitted before shift: [ '', 'test', 'test-src', 'example.js' ]
-        // splitted after shift: [ 'example.js' ]
 
-        const splitted = temp.split(path.sep);
-        splitted.shift(); // get rid of pesky ['', first element
+        var splitted = temp.split(path.sep);
+        splitted = splitted.filter(i => i); // get rid of pesky ['', first element
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('splitted before shift:', splitted);
-        }
+
+        debug('splitted before shift:', splitted);
+
 
         while ((splitted.length + testTargetDirLength) > originalLength) {
             splitted.shift();
         }
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('splitted after shift:', splitted);
-        }
+        debug('splitted after shift:', splitted);
 
         const joined = splitted.join(path.sep);
 
-        if (global.sumanOpts.vverbose || process.env.SUMAN_DEBUG === 'yes') {
-            console.log('pre-resolved:', joined);
-        }
+        debug('pre-resolved:', joined);
+        debug('joined:', joined);
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('joined:', joined);
-        }
 
         return {
             originalPath: item,
             targetPath: path.resolve(testTargetDir + '/' + joined)
-            // targetPath: path.resolve(targetDir)
         }
     },
 
@@ -110,10 +103,10 @@ const sumanUtils = module.exports = Object.freeze({
         const l = path.normalize(path.sep + testTargetPath).split(path.sep).length;
         const items = path.normalize(path.sep + p).split(path.sep);
 
-        if (process.env.SUMAN_DEBUG === 'yes') {
-            console.log('length of testTargetPath:', l);
-            console.log('items length:', items.length);
-        }
+
+        debug('length of testTargetPath:', l);
+        debug('items length:', items.length);
+
 
         var unexpected = true;
 
@@ -189,32 +182,46 @@ const sumanUtils = module.exports = Object.freeze({
     },
 
     findSharedPath: function (p1, p2) {
+
         const split1 = String(p1).split(path.sep);
         const split2 = String(p2).split(path.sep);
 
-        if (split1[0] === '') {
-            split1.shift();
-        }
+        //remove weird empty strings ''
+        const one = split1.filter(i => i);
+        const two = split2.filter(i => i);
 
-        if (split2[0] === '') {
-            split2.shift();
-        }
+        const max = Math.max(one.length, two.length);
+
+        // if (split1[0] === '') {
+        //     split1.shift();
+        // }
+        //
+        // if (split2[0] === '') {
+        //     split2.shift();
+        // }
 
         var i = 0;
-        const shared = [];
+        var shared = [];
 
-        while (split1[i] === split2[i]) {
-            shared.push(split1[i]);
+        while (one[i] === two[i] && i < max) {
+            shared.push(one[i]);
             i++;
+
+            if (i > 100) {
+                var err = new Error(' => Suman implementation error => first array => ' + one, ', ' +
+                    'second array => ', two);
+                console.error(err.stack);
+                throw err;
+            }
         }
 
-        return path.sep + shared.join(path.sep);
-
+        shared = shared.filter(i => i);
+        return path.resolve(path.sep + shared.join(path.sep));
     },
 
     removeSharedRootPath: function (paths) {
 
-        if (paths.length < 2) {   //  paths = ['/a/single/path']
+        if (paths.length < 2) {   //  paths = ['just/a/single/path/so/letsreturnit']
             return paths.map(function (p) {
                 return [p, path.basename(p)];
             });
@@ -260,8 +267,23 @@ const sumanUtils = module.exports = Object.freeze({
         return ((String(str).match(regex) || []).length > (count === 0 ? 0 : (count || 1)));
     },
 
+    isGeneratorFn: function (fn) {
+
+        if (typeof fn !== 'function') {
+            return false;
+        }
+        var fnStr = toStr.call(fn);
+        return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
+        || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
+
+    },
+
     isArrowFunction: function (fn) { //TODO this will not work for async functions!
-        return fn.toString().indexOf('function') !== 0;
+        return String(fn).indexOf('function') !== 0;
+    },
+
+    isAsyncFn: function (fn) {
+        return String(fn).indexOf('async ') === 0;
     },
 
     getStringArrayOfArgLiterals: function (fn) {
@@ -341,16 +363,6 @@ const sumanUtils = module.exports = Object.freeze({
         return true;
     },
 
-    isGeneratorFn: function isGeneratorFn(fn) {
-
-        if (typeof fn !== 'function') {
-            return false;
-        }
-        var fnStr = toStr.call(fn);
-        return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
-        || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
-
-    },
 
     arrayHasDuplicates: function arrayHasDuplicates(a) {
         return _.uniq(a).length !== a.length;
