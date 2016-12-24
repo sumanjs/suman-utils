@@ -267,6 +267,13 @@ const sumanUtils = module.exports = Object.freeze({
         return ((String(str).match(regex) || []).length > (count === 0 ? 0 : (count || 1)));
     },
 
+    isGeneratorFn2: function(fn){
+        const str = String(fn);
+        const indexOfFirstParen = str.indexOf('(');
+        const indexOfFirstStar = str.indexOf('*');
+        return indexOfFirstStar < indexOfFirstParen;
+    },
+
     isGeneratorFn: function (fn) {
 
         if (typeof fn !== 'function') {
@@ -316,20 +323,21 @@ const sumanUtils = module.exports = Object.freeze({
         return function callOnce(err) {
             if (callable) {
                 callable = false;
-                fn.apply(ctx, arguments);
+                return fn.apply(ctx, arguments);
             }
             else {
                 console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
-                console.error(' => Suman warning => \n', err instanceof Error ? err.stack : util.inspect(err));
+                if(err){
+                    console.error(' => Suman warning => \n', err.stack || util.inspect(err));
+                }
             }
-
         }
     },
 
     onceAsync: function sumanOnce(ctx, fn) {
 
         var callable = true;
-        return function callOnce() {
+        return function callOnce(err) {
             const args = arguments;
             if (callable) {
                 callable = false;
@@ -339,7 +347,9 @@ const sumanUtils = module.exports = Object.freeze({
             }
             else {
                 console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
-                console.error(' => Suman warning => \n', err.stack || util.inspect(err));
+                if(err){
+                    console.error(' => Suman warning => \n', err.stack || util.inspect(err));
+                }
             }
 
         }
