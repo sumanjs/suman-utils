@@ -20,6 +20,9 @@ const residence = require('residence');
 const _ = require('lodash');
 const debug = require('suman-debug')('s:utils');
 
+
+//project
+const isX = require('./lib/is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
@@ -28,6 +31,10 @@ const isFnRegex = /^\s*(?:function)?\*/;
 /////////////////////////////////////////////////////////////////////////////////////
 
 const sumanUtils = module.exports = Object.freeze({
+
+    isStream: isX.isStream,
+    isObservable: isX.isObservable,
+    isSubscriber: isX.isSubscriber,
 
     mapToTargetDir: function (item) {
 
@@ -267,7 +274,7 @@ const sumanUtils = module.exports = Object.freeze({
         return ((String(str).match(regex) || []).length > (count === 0 ? 0 : (count || 1)));
     },
 
-    isGeneratorFn2: function(fn){
+    isGeneratorFn2: function (fn) {
         const str = String(fn);
         const indexOfFirstParen = str.indexOf('(');
         const indexOfFirstStar = str.indexOf('*');
@@ -327,7 +334,7 @@ const sumanUtils = module.exports = Object.freeze({
             }
             else {
                 console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
-                if(err){
+                if (err) {
                     console.error(' => Suman warning => \n', err.stack || util.inspect(err));
                 }
             }
@@ -347,7 +354,7 @@ const sumanUtils = module.exports = Object.freeze({
             }
             else {
                 console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
-                if(err){
+                if (err) {
                     console.error(' => Suman warning => \n', err.stack || util.inspect(err));
                 }
             }
@@ -378,9 +385,6 @@ const sumanUtils = module.exports = Object.freeze({
         return _.uniq(a).length !== a.length;
     },
 
-    isReadableStream: function isReadableStream(obj) {
-        return obj instanceof stream.Stream && typeof obj._read === 'function' && typeof obj._readableState === 'object';
-    },
 
     makeResultsDir: function (bool, cb) {
 
@@ -395,6 +399,7 @@ const sumanUtils = module.exports = Object.freeze({
 
         }
     }
+
 
 });
 
