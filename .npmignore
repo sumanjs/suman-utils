@@ -1,0 +1,9 @@
+node_modules
+test/
+link.sh
+pdev.sh
+publish-suman-utils.sh
+README.md
+yarn.lock
+test.sh
+suman.conf.js
