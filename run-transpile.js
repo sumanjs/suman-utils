@@ -29,17 +29,25 @@ const testDir = process.env.TEST_DIR;
 const testSrcDir = process.env.TEST_SRC_DIR;
 const testTargetDir = process.env.TEST_TARGET_DIR;
 const testTargetDirLength = String(testTargetDir).split(path.sep).length;
-
+const transpileLogDir = process.env.SUMAN_TRANSPILE_LOG_PATH;
 
 // debug('=> (in suman-utils) => process.env =', process.env);
 
 ////////////////////////////////////////////
 
-const mapToTargetDir = sumanUtils.mapToTargetDir;
-
-////////////////////////////////////////////
-
 function run (paths, opts, cb) {
+
+  // var fd;
+  //
+  // try {
+  //   fd = fs.openSync(process.env.SUMAN_TRANSPILE_LOG_PATH,{});
+  // }
+  // catch (err) {
+  //   console.error(err.stack || err);
+  // }
+
+  const strm = fs.createWriteStream(process.env.SUMAN_TRANSPILE_LOG_PATH, {end: false});
+  var errorExperiencedInATLeastOneChildProcess = false;
 
   const testSrcDirLength = String(testSrcDir).split(path.sep).length;
   const testTargetDirLength = String(testTargetDir).split(path.sep).length;
@@ -56,7 +64,7 @@ function run (paths, opts, cb) {
     babelExec = cp.execSync('which babel');
   }
 
-  debug([' => Istanbul executable located here => ', babelExec]);
+  debug(' => Istanbul executable located here => ', babelExec);
 
   assert.equal(testSrcDirLength, testTargetDirLength,
     ' => Suman usage error => "testSrcDir" and "testTargetDir" must be at the same level in your project => \n' +
@@ -64,7 +72,7 @@ function run (paths, opts, cb) {
 
   if (opts.all) {   //TODO: opts.all should just be opts.recursive ??
 
-    debug(['opts.all for transpile is true']);
+    debug('opts.all for transpile is true');
 
     try {
       assert(testDir && typeof testDir === 'string');
@@ -158,31 +166,42 @@ function run (paths, opts, cb) {
     return path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
   });
 
-  debug(' => paths after array =>', paths);
+  debug(' => paths after array (should be absolute now) =>', paths);
 
-  //TODO: should be paths[0], need to build up directories for all paths
-  const dirsToBuild = sumanUtils.getArrayOfDirsToBuild(testTargetDir, paths[0]);
+  const dirsToBuild = [];
+
+  paths.forEach(function (p) {
+    if (p) {
+      dirsToBuild.push(sumanUtils.getArrayOfDirsToBuild(testTargetDir, p));
+    }
+  });
 
   debug(' => dirsToBuild:', dirsToBuild);
 
-  sumanUtils.buildDirs(dirsToBuild, function (err) {  //make test-target dir in case it doesn't exist
+  const filteredDirsToBuild = dirsToBuild.filter(function (d, index, arr) {
+    return !sumanUtils.checkIfPathAlreadyExistsInList(arr, d, index);
+  });
+
+  debug(' => filtered dirsToBuild:', filteredDirsToBuild);
+
+  sumanUtils.buildDirsWithMkDirp(filteredDirsToBuild, function (err) {  //make test-target dir in case it doesn't exist
 
     if (err) {
       cb(err);
     }
     else {
 
-      debug([' => Root of project => ', projectRoot]);
-      debug([' => "testTargetDir" => ', testTargetDir]);
+      debug(' => Root of project => ', projectRoot);
+      debug(' => "testTargetDir" => ', testTargetDir);
 
       // arbitrarily limit to 5 concurrent "babel processes".
       async.mapLimit(paths, 5, function (item, cb) {
 
-        const fsItemTemp = mapToTargetDir(item);
+        const fsItemTemp = sumanUtils.mapToTargetDir(item);
         const fsItem = fsItemTemp.targetPath;
 
-        debug([' => Item to be transpiled:', item]);
-        debug([' => fsItem:', fsItem]);
+        debug(' => Item to be transpiled:', item);
+        debug(' => fsItem:', fsItem);
 
         fs.stat(item, function (err, stats) {
 
@@ -195,22 +214,19 @@ function run (paths, opts, cb) {
             var cmd;
 
             if (path.extname(item) === '.js' || path.extname(item) === '.jsx') {
-
-              cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-file', fsItem].join(' ');
-
-              if (true || opts.verbose) {
+              cmd = [babelExec, item, '--out-file', fsItem];
+              if (opts.verbose) {
                 console.log('\n ' + colors.bgCyan.magenta.bold(' => Test file will be transpiled to => ') + colors.bgCyan.black(fsItem));
               }
             }
             else {
-              cmd = ['cd', projectRoot, '&&', 'cp', item, fsItem].join(' ');
+              cmd = ['cp', item, fsItem];
               console.log('\n ' + colors.bgCyan.magenta.bold(' => Test fixture file will be copied to => ' + fsItem));
             }
           }
           else {
 
-            cmd = ['cd', projectRoot, '&&', babelExec, item, '--out-dir', fsItem, '--copy-files'].join(' ');
-            // cmd = 'cd ' + projectRoot + ' && ./node_modules/.bin/babel ' + item + ' --out-dir ' + fsItem + ' --copy-files';
+            cmd = [babelExec, item, '--out-dir', fsItem, '--copy-files'];
             console.log('\n\n ' + colors.bgMagenta.cyan.bold(' => Directory will be transpiled to => '), '\n',
               colors.bgWhite.black.bold(' ' + fsItem + ' '));
           }
@@ -220,25 +236,46 @@ function run (paths, opts, cb) {
               colors.yellow.bgBlack(cmd), '\n');
           }
 
-          cp.exec(cmd, function (err, stdout, stderr) {
-            if (err) {
-              [err, stdout, stderr].forEach(function (e) {
-                if (e) {
-                  console.error(typeof e === 'string' ? e : util.inspect(e.stack || e));
-                }
-              });
-
-              cb(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
-                ' necessary babel dependencies in your project so suman can use them...'));
-
-            }
-            else {
-              cb(null, fsItemTemp)
-            }
+          var k = cp.spawn('bash', [], {
+            cwd: projectRoot
           });
+
+          cmd = cmd.join(' ');
+          k.stdin.write('\n' + cmd + '\n');
+
+          process.nextTick(function () {
+            k.stdin.end();
+          });
+
+          k.stderr.pipe(strm);
+
+          k.stderr.once('data', function (d) {
+            errorExperiencedInATLeastOneChildProcess = true;
+          });
+
+          k.once('close', function (code) {
+            k.unref();
+            if (code > 0) {
+              console.log(colors.bgRed(' => You probably need to run "$ suman --use-babel" to install the' +
+                ' necessary babel dependencies in your project so suman can use them...'));
+            }
+            cb(null, fsItemTemp);
+          });
+
         })
 
-      }, cb);
+      }, function (err) {
+
+        if (err) {
+          console.error(err.stack || err);
+        }
+        if (errorExperiencedInATLeastOneChildProcess) {
+          console.log(colors.yellow.bold(' => Suman warning => A transpilation process may have experienced an error, check the log.'));
+        }
+        strm.end();
+        cb(err);
+
+      });
     }
 
   });
