@@ -1,7 +1,7 @@
 'use strict';
 
 process.on('warning', function (w) {
-  console.error('\n', ' => Suman warning => ', w.stack || w, '\n');
+  console.error('\n', ' => Suman-Utils warning => ', w.stack || w, '\n');
 });
 
 //core
@@ -30,7 +30,8 @@ const testSrcDir = process.env.TEST_SRC_DIR;
 const testTargetDir = process.env.TEST_TARGET_DIR;
 const testTargetDirLength = String(testTargetDir).split(path.sep).length;
 
-debug(['=> (in suman-utils) => process.env =', process.env]);
+
+// debug('=> (in suman-utils) => process.env =', process.env);
 
 ////////////////////////////////////////////
 
@@ -127,7 +128,7 @@ function run (paths, opts, cb) {
   }
   else {  //opts.all == false
 
-    debug(['opts.all for transpile is false']);
+    debug('opts.all for transpile is false');
 
     // here we want two things to be faster:
     // no runner, so we save 100ms
@@ -140,7 +141,7 @@ function run (paths, opts, cb) {
     //
     // dirs = [testDir];
 
-    debug(['opts.sameDir for transpile is false']);
+    debug('opts.sameDir for transpile is false');
 
     try {
       assert(paths.length > 0, colors.bgBlack.yellow(' => Suman error => please pass at least one test file path in your command.'));
@@ -149,20 +150,20 @@ function run (paths, opts, cb) {
       return cb(err);
     }
 
-    debug([' => targetDir:', testTargetDir]);
-    debug([' => paths before array =>', paths]);
+    debug(' => targetDir:', testTargetDir);
+    debug(' => paths before array =>', paths);
   }
 
   paths = paths.map(item => {
     return path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
   });
 
-  debug([' => paths after array =>', paths]);
+  debug(' => paths after array =>', paths);
 
   //TODO: should be paths[0], need to build up directories for all paths
   const dirsToBuild = sumanUtils.getArrayOfDirsToBuild(testTargetDir, paths[0]);
 
-  debug([' => dirsToBuild:', dirsToBuild]);
+  debug(' => dirsToBuild:', dirsToBuild);
 
   sumanUtils.buildDirs(dirsToBuild, function (err) {  //make test-target dir in case it doesn't exist
 
