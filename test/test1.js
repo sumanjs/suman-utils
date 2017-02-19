@@ -1,6 +1,4 @@
-/**
- * Created by Olegzandr on 10/1/16.
- */
+
 
 
 const sumanUtils = require('../utils');

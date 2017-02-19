@@ -15,7 +15,7 @@
     "test",
     "framework"
   ],
-  "author": "Olegzander V.D.",
+  "author": "Olegzandr",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ORESoftware/suman-utils/issues"
@@ -25,8 +25,10 @@
     "async": "^2.0.0-rc.6",
     "colors": "^1.1.2",
     "lodash": "^4.13.1",
-    "residence": "0.0.1",
-    "suman-debug": "0.0.101"
+    "residence": "latest",
+    "suman-debug": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "suman": "github:sumanjs/suman#dev"
+  }
 }
