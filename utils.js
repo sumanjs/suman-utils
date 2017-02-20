@@ -1,4 +1,4 @@
-'use striiiict';
+'use strict';
 
 process.on('warning', function (w) {
   console.error('\n', ' => Suman warning => ', w.stack || w, '\n');
