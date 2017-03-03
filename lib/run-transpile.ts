@@ -17,7 +17,7 @@ const colors = require('colors/safe');
 const debug = require('suman-debug')('s:utils-transpile');
 
 //project
-const sumanUtils = require('./utils');
+const sumanUtils = require('./all');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -20,18 +20,20 @@ const debug = require('suman-debug')('s:utils');
 const mkdirp = require('mkdirp');
 
 //project
-const isX = require('./lib/is-x');
+const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
+const runTranspile = require('./run-transpile');
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-const sumanUtils = module.exports = Object.freeze({
+const sumanUtils = module.exports = {
 
   isStream: isX.isStream,
   isObservable: isX.isObservable,
   isSubscriber: isX.isSubscriber,
+  runTranspile: runTranspile,
 
   mapToTargetDir: function (item) {
 
@@ -411,6 +413,6 @@ const sumanUtils = module.exports = Object.freeze({
     }
   }
 
-});
+};
 
 

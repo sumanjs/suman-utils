@@ -1,8 +1,3 @@
-/**
- * Created by oleg on 12/19/16.
- */
-
-
 
 const utils = require('../utils');
 

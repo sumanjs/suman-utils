@@ -10,11 +10,13 @@ function basic(stream) {
 }
 
 isStream.writable = function (stream) {
-    return basic(stream) && stream.writable !== false && typeof stream._write === 'function' && typeof stream._writableState === 'object';
+    return basic(stream) && stream.writable !== false && typeof stream._write === 'function' &&
+      typeof stream._writableState === 'object';
 };
 
 isStream.readable = function (stream) {
-    return basic(stream) && stream.readable !== false && typeof stream._read === 'function' && typeof stream._readableState === 'object';
+    return basic(stream) && stream.readable !== false && typeof stream._read === 'function' &&
+      typeof stream._readableState === 'object';
 };
 
 isStream.duplex = function (stream) {
@@ -22,7 +24,8 @@ isStream.duplex = function (stream) {
 };
 
 isStream.transform = function (stream) {
-    return isStream.duplex(stream) && typeof stream._transform === 'function' && typeof stream._transformState === 'object';
+    return isStream.duplex(stream) && typeof stream._transform === 'function' &&
+      typeof stream._transformState === 'object';
 };
 
 /////////////
@@ -48,5 +51,4 @@ module.exports = {
     isObservable: isObservable,
     isSubscriber: isSubscriber,
     isStream: isStream
-
 };

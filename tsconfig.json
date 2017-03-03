@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+    },
+    "types": [
+      "node"
+    ],
+    "target": "es5",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "allowUnreachableCode": true,
+    "lib": [
+      "es2015",
+      "es2016"
+    ]
+  },
+  "compileOnSave": false,
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "test",
+    "node_modules"
+  ]
+}
