@@ -1,9 +1,8 @@
 node_modules/
 test/
-link.sh
-pdev.sh
-publish-suman-utils.sh
 yarn.lock
 test.sh
 suman.conf.js
 .idea
+*.sh
+*.ts

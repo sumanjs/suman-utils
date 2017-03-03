@@ -8,7 +8,6 @@ if [[ "$BRANCH" != "master" ]]; then
   exit 1;
 fi
 
-npm version patch --force
 git add . &&
 git add -A &&
 git commit --allow-empty -am "pre:${GIT_COMMIT_MSG}" &&
@@ -16,6 +15,7 @@ git pull &&
 git add . &&
 git add -A &&
 git commit --allow-empty -am "publish/release:${GIT_COMMIT_MSG}" &&
+npm version patch --force &&
 git push &&
 npm publish . &&
 echo "published to NPM successfully"

@@ -16,7 +16,8 @@ const assert = require('assert');
 const async = require('async');
 const residence = require('residence');
 const _ = require('lodash');
-const debug = require('suman-debug')('s:utils');
+import * as sumanDebug from 'suman-debug';
+const debug = sumanDebug('s:utils');
 const mkdirp = require('mkdirp');
 
 //project
