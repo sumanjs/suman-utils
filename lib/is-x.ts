@@ -1,45 +1,44 @@
 'use strict';
+import {Stream} from "stream";
 
 
-function isStream(stream) {
-    return basic(stream) && (isStream.writable(stream) || isStream.readable(stream));
+function isStream(stream: any): boolean {
+    return isBasic(stream) && (isWritable(stream) || IsReadable(stream));
 }
 
-function basic(stream) {
+function isBasic(stream: Stream) : boolean {
     return stream !== null && typeof stream === 'object' && typeof stream.pipe === 'function';
 }
 
-isStream.writable = function (stream) {
-    return basic(stream) && stream.writable !== false && typeof stream._write === 'function' &&
-      typeof stream._writableState === 'object';
-};
+function isWritable(stream: any) : boolean {
+    return isBasic(stream) && stream.writable !== false && typeof stream._write === 'function' &&
+        typeof stream._writableState === 'object';
+}
 
-isStream.readable = function (stream) {
-    return basic(stream) && stream.readable !== false && typeof stream._read === 'function' &&
-      typeof stream._readableState === 'object';
-};
+function IsReadable(stream: any) : boolean {
+    return isBasic(stream) && stream.readable !== false && typeof stream._read === 'function' &&
+        typeof stream._readableState === 'object';
+}
 
-isStream.duplex = function (stream) {
-    return isStream.writable(stream) && isStream.readable(stream);
-};
+function isDuplex(stream: Stream) : boolean {
+    return isWritable(stream) && IsReadable(stream);
+}
 
-isStream.transform = function (stream) {
-    return isStream.duplex(stream) && typeof stream._transform === 'function' &&
-      typeof stream._transformState === 'object';
-};
+function isTransform(stream: any) : boolean {
+    return isDuplex(stream) && typeof stream._transform === 'function' &&
+        typeof stream._transformState === 'object';
+}
 
 /////////////
 
-function isObservable(val) {
-
+function isObservable(val: any) {
     return (val && typeof val.subscribe === 'function'
     && val.constructor && /Observable/.test(val.constructor.name));
-
 }
 
 ////////////////////////////
 
-function isSubscriber(val) {
+function isSubscriber(val: any) {
 
     return (val && typeof val.subscribe !== 'function' && typeof val.usubscribe !== 'function'
     && typeof val._next === 'function' && typeof val._error === 'function' && typeof val._complete === 'function');
@@ -48,7 +47,7 @@ function isSubscriber(val) {
 
 
 module.exports = {
-    isObservable: isObservable,
-    isSubscriber: isSubscriber,
-    isStream: isStream
+    isObservable,
+    isSubscriber,
+    isStream
 };

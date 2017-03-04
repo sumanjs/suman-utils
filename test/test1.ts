@@ -1,8 +1,6 @@
 
 
-
-const sumanUtils = require('../utils');
-
+const sumanUtils = require('suman-utils');
 
 const arr = sumanUtils.getArrayOfDirsToBuild(
   '/Users/Olegzandr/WebstormProjects/oresoftware/suman/test-target',

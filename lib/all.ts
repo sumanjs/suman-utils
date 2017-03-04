@@ -1,26 +1,25 @@
 'use strict';
 
-process.on('warning', function (w) {
-  console.error('\n', ' => Suman warning => ', w.stack || w, '\n');
+process.on('warning', function (w: any) {
+  console.error('\n', ' => Suman warning => ', (w.stack || w), '\n');
 });
 
+
 //core
-const fs = require('fs');
-const path = require('path');
-const stream = require('stream');
-const cp = require('child_process');
-const util = require('util');
-const assert = require('assert');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as util from 'util';
+import * as assert from 'assert';
 
 //npm
 const async = require('async');
 const residence = require('residence');
 const _ = require('lodash');
-import * as sumanDebug from 'suman-debug';
-const debug = sumanDebug('s:utils');
+const debug = require('suman-debug')('s:utils');
 const mkdirp = require('mkdirp');
 
 //project
+import * as dts from '../d.ts/global';
 const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
@@ -29,6 +28,13 @@ const runTranspile = require('./run-transpile');
 
 /////////////////////////////////////////////////////////////////////////////////////
 
+interface MapToTargetDirResult {
+  originalPath: string,
+  targetPath: string
+}
+
+let globalProjectRoot : string = null;
+
 const sumanUtils = module.exports = {
 
   isStream: isX.isStream,
@@ -36,7 +42,7 @@ const sumanUtils = module.exports = {
   isSubscriber: isX.isSubscriber,
   runTranspile: runTranspile,
 
-  mapToTargetDir: function (item) {
+  mapToTargetDir: function (item: string): MapToTargetDirResult {
 
     const projectRoot = process.env.SUMAN_PROJECT_ROOT;
 
@@ -84,11 +90,12 @@ const sumanUtils = module.exports = {
     }
   },
 
-  isSumanDebug: function () {
+  isSumanDebug: function () : boolean {
     return process.env.SUMAN_DEBUG === 'yes';
   },
 
-  runAssertionToCheckForSerialization: function runAssertionToCheckForSerialization (val) {
+
+  runAssertionToCheckForSerialization: function (val: Object): void {
     if (!val) {
       return;
     }
@@ -97,17 +104,17 @@ const sumanUtils = module.exports = {
       'here is the data in raw form =>\n' + val + ' and here we have run util.inspect on it =>\n' + util.inspect(val));
   },
 
-  buildDirsWithMkDirp: function (paths, cb) {
-    async.each(paths, function (p, cb) {
+  buildDirsWithMkDirp: function (paths : Array<string>, cb: Function) : void {
+    async.each(paths, function (p: string, cb: Function) {
       mkdirp(p, cb);
     }, cb);
   },
 
-  getArrayOfDirsToBuild: function (testTargetPath, p) {
+  getArrayOfDirsToBuild: function (testTargetPath: string, p: string): string | undefined {
 
     // => p is expected to be a path to a file, not a directory
 
-    var temp = null;
+    var temp: any = null;
     const l = path.normalize('/' + testTargetPath).split('/').length;
     const items = path.normalize('/' + p).split('/');
 
@@ -137,7 +144,7 @@ const sumanUtils = module.exports = {
 
   },
 
-  checkIfPathAlreadyExistsInList: function (paths, p, index) {
+  checkIfPathAlreadyExistsInList: function (paths: Array<string>, p: string, index: number) : boolean{
 
     // assume paths =>  [/a/b/c/d/e]
     // p => /a/b/c
@@ -145,6 +152,7 @@ const sumanUtils = module.exports = {
 
     return paths.some(function (pth, i) {
       if(i === index){
+        // we ignore the matching item
         return false;
       }
       return String(pth).indexOf(p) === 0;
@@ -152,11 +160,15 @@ const sumanUtils = module.exports = {
 
   },
 
-  buildDirs: function (dirs, cb) {
+  buildDirs: function (dirs: Array<string>, cb: Function) : void {
 
-    async.eachSeries(dirs, function (item, cb) {
+    if(dirs.length < 1){
+      return process.nextTick(cb);
+    }
 
-      fs.mkdir(item, function (err) {
+    async.eachSeries(dirs, function (item: string, cb: Function): void {
+
+      fs.mkdir(item, function (err: Error) {
         if (err && !String(err.stack).match(/eexist/i)) {
           console.error(err.stack || err);
           cb(err);
@@ -166,23 +178,19 @@ const sumanUtils = module.exports = {
         }
       });
 
-    }, function (err) {
-      process.nextTick(function () {
-        cb(err);
-      })
-    });
+    }, cb);
 
   },
 
-  padWithFourSpaces: function () {
+  padWithFourSpaces: function () : string{
     return new Array(5).join(' ');  //yields 4 whitespace chars
   },
 
-  padWithXSpaces: function (x) {
+  padWithXSpaces: function (x: number): string {
     return new Array(x + 1).join(' ');  //yields x whitespace chars
   },
 
-  removePath: function (p1, p2) {
+  removePath: function (p1: string, p2: string) : string {
 
     assert(path.isAbsolute(p1) && path.isAbsolute(p2), 'Please pass in absolute paths, ' +
       'p1 => ' + util.inspect(p1) + ', p2 => ' + util.inspect(p2));
@@ -190,7 +198,7 @@ const sumanUtils = module.exports = {
     const split1 = String(p1).split(path.sep);
     const split2 = String(p2).split(path.sep);
 
-    const newPath = [];
+    const newPath : Array<string> = [];
 
     const max = Math.max(split1.length, split2.length);
 
@@ -204,7 +212,7 @@ const sumanUtils = module.exports = {
 
   },
 
-  findSharedPath: function (p1, p2) {
+  findSharedPath: function (p1: string, p2: string) : string {
 
     const split1 = String(p1).split(path.sep);
     const split2 = String(p2).split(path.sep);
@@ -223,18 +231,15 @@ const sumanUtils = module.exports = {
     //     split2.shift();
     // }
 
-    var i = 0;
-    var shared = [];
+    let i = 0;
+    let shared : Array<string> = [];
 
     while (one[i] === two[i] && i < max) {
       shared.push(one[i]);
       i++;
-
       if (i > 100) {
-        var err = new Error(' => Suman implementation error => first array => ' + one, ', ' +
-          'second array => ', two);
-        console.error(err.stack);
-        throw err;
+        throw new Error(' => Suman implementation error => first array => ' + one + ', ' +
+            'second array => ' + two);
       }
     }
 
@@ -242,7 +247,7 @@ const sumanUtils = module.exports = {
     return path.resolve(path.sep + shared.join(path.sep));
   },
 
-  removeSharedRootPath: function (paths) {
+  removeSharedRootPath: function (paths: Array<string>): Array<Array<string>> {
 
     if (paths.length < 2) {   //  paths = ['just/a/single/path/so/letsreturnit']
       return paths.map(function (p) {
@@ -250,7 +255,7 @@ const sumanUtils = module.exports = {
       });
     }
 
-    var shared = null;
+    let shared : string | Array<string> = null;
 
     paths.forEach(function (p) {
 
@@ -260,7 +265,7 @@ const sumanUtils = module.exports = {
       if (shared) {
         const arr = String(p).split('');
 
-        var i = 0;
+        let i = 0;
 
         arr.every(function (item, index) {
           if (String(item) !== String(shared[index])) {
@@ -286,64 +291,63 @@ const sumanUtils = module.exports = {
 
   },
 
-  checkForValInStr: function (str, regex, count) {   //used primarily to check if 'done' literal is in fn.toString()
+  checkForValInStr: function (str: string, regex: RegExp, count: number): boolean {
+    //used primarily to check if 'done' literal is in fn.toString()
     return ((String(str).match(regex) || []).length > (count === 0 ? 0 : (count || 1)));
   },
 
-  isGeneratorFn2: function (fn) {
+  isGeneratorFn2: function (fn: Function) : boolean {
     const str = String(fn);
     const indexOfFirstParen = str.indexOf('(');
     const indexOfFirstStar = str.indexOf('*');
     return indexOfFirstStar < indexOfFirstParen;
   },
 
-  isGeneratorFn: function (fn) {
+  isGeneratorFn: function (fn: Function) : boolean {
 
     if (typeof fn !== 'function') {
       return false;
     }
-    var fnStr = toStr.call(fn);
+    let fnStr = toStr.call(fn);
     return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
     || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
 
   },
 
-  isArrowFunction: function (fn) { //TODO this will not work for async functions!
+  isArrowFunction: function (fn: Function) : boolean {
+    //TODO this will not work for async functions!
     return String(fn).indexOf('function') !== 0;
   },
 
-  isAsyncFn: function (fn) {
+  isAsyncFn: function (fn: Function) : boolean {
     return String(fn).indexOf('async ') === 0;
   },
 
-  getStringArrayOfArgLiterals: function (fn) {
-    // if function(a,b,c){}  ---> return ['a','b','c']
-  },
 
-  defaultSumanHomeDir: function () {
+  defaultSumanHomeDir: function () : string {
     return path.normalize(path.resolve((process.env.HOME || process.env.USERPROFILE) + path.sep + 'suman_data'));
   },
 
-  defaultSumanResultsDir: function () {
+  defaultSumanResultsDir: function () : string {
     return path.normalize(path.resolve(this.getHomeDir() + path.sep + 'suman' + path.sep + 'test_results'));
   },
 
-  getHomeDir: function () {
+  getHomeDir: function () : string {
     return process.env[(process.platform === 'win32' ? 'USERPROFILE' : 'HOME')];
   },
 
-  findProjectRoot: function findProjRoot () {
-    if (!findProjRoot.root) {
-      findProjRoot.root = residence.findProjectRoot.apply(global, arguments);
+  findProjectRoot: function findProjRoot (p : string) : string {
+    if (!globalProjectRoot) {
+      globalProjectRoot = residence.findProjectRoot(p);
     }
-    return findProjRoot.root;
-  },  // reference residence version for this call
+    return globalProjectRoot;
+  },
 
-  once: function sumanOnce (ctx, fn) {
+  once: function sumanOnce (ctx: Object, fn: Function) : Function {
 
-    var callable = true;
+    let callable = true;
 
-    return function callOnce (err) {
+    return function callOnce (err: Error) {
       if (callable) {
         callable = false;
         return fn.apply(ctx, arguments);
@@ -357,10 +361,10 @@ const sumanUtils = module.exports = {
     }
   },
 
-  onceAsync: function sumanOnce (ctx, fn) {
+  onceAsync: function sumanOnce (ctx: Object, fn: Function) : Function {
 
     var callable = true;
-    return function callOnce (err) {
+    return function callOnce (err: Error) {
       const args = arguments;
       if (callable) {
         callable = false;
@@ -378,7 +382,7 @@ const sumanUtils = module.exports = {
     }
   },
 
-  checkForEquality: function checkForArrayOfStringsEquality (arr1, arr2) {
+  checkForEquality: function (arr1: Array<string>, arr2: Array<string>): boolean {
 
     if (arr1.length !== arr2.length) {
       return false;
@@ -387,7 +391,7 @@ const sumanUtils = module.exports = {
     arr1 = arr1.sort();
     arr2 = arr2.sort();
 
-    for (var i = 0; i < arr1.length; i++) {
+    for (let i = 0; i < arr1.length; i++) {
       if (String(arr1[i]) !== String(arr2[i])) {
         return false;
       }
@@ -396,11 +400,11 @@ const sumanUtils = module.exports = {
     return true;
   },
 
-  arrayHasDuplicates: function arrayHasDuplicates (a) {
+  arrayHasDuplicates: function arrayHasDuplicates (a: Array<string>) : boolean {
     return _.uniq(a).length !== a.length;
   },
 
-  makeResultsDir: function (bool, cb) {
+  makeResultsDir: function (bool: boolean, cb: Function): void {
 
     if (!bool) {
       process.nextTick(cb);

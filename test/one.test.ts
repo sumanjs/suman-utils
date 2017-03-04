@@ -1,5 +1,5 @@
 
-const utils = require('../');
+const utils = require('suman-utils');
 
 [
     utils.isGeneratorFn(function *() {}),
