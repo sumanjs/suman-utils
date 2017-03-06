@@ -55,7 +55,7 @@ const sumanUtils = module.exports = {
 
     item = path.resolve(path.isAbsolute(item) ? item : (projectRoot + '/' + item));
 
-    var itemSplit = String(item).split(path.sep);
+    let itemSplit = String(item).split(path.sep);
     itemSplit = itemSplit.filter(i => i); // get rid of pesky ['', first element
 
     debug('itemSplit:', itemSplit);
@@ -68,7 +68,7 @@ const sumanUtils = module.exports = {
     debug(' => testTargetDirLength:', testTargetDirLength);
     debug(' => temp path:', temp);
 
-    var splitted = temp.split(path.sep);
+    let splitted = temp.split(path.sep);
     splitted = splitted.filter(i => i); // get rid of pesky ['', first element
 
     debug('splitted before shift:', splitted);
@@ -90,10 +90,13 @@ const sumanUtils = module.exports = {
     }
   },
 
+  isSumanSingleProcess: function() : boolean {
+    return process.env.SUMAN_SINGLE_PROCESS === 'yes';
+  },
+
   isSumanDebug: function () : boolean {
     return process.env.SUMAN_DEBUG === 'yes';
   },
-
 
   runAssertionToCheckForSerialization: function (val: Object): void {
     if (!val) {
@@ -113,8 +116,7 @@ const sumanUtils = module.exports = {
   getArrayOfDirsToBuild: function (testTargetPath: string, p: string): string | undefined {
 
     // => p is expected to be a path to a file, not a directory
-
-    var temp: any = null;
+    let temp: string = null;
     const l = path.normalize('/' + testTargetPath).split('/').length;
     const items = path.normalize('/' + p).split('/');
 
@@ -202,7 +204,7 @@ const sumanUtils = module.exports = {
 
     const max = Math.max(split1.length, split2.length);
 
-    for (var i = 0; i < max; i++) {
+    for (let i = 0; i < max; i++) {
       if (split1[i] !== split2[i]) {
         newPath.push(split1[i]);
       }
@@ -343,7 +345,7 @@ const sumanUtils = module.exports = {
     return globalProjectRoot;
   },
 
-  once: function sumanOnce (ctx: Object, fn: Function) : Function {
+  once: function (ctx: Object, fn: Function) : Function {
 
     let callable = true;
 
@@ -361,9 +363,10 @@ const sumanUtils = module.exports = {
     }
   },
 
-  onceAsync: function sumanOnce (ctx: Object, fn: Function) : Function {
+  onceAsync: function (ctx: Object, fn: Function) : Function {
 
-    var callable = true;
+    let callable = true;
+    
     return function callOnce (err: Error) {
       const args = arguments;
       if (callable) {
@@ -400,8 +403,10 @@ const sumanUtils = module.exports = {
     return true;
   },
 
-  arrayHasDuplicates: function arrayHasDuplicates (a: Array<string>) : boolean {
-    return _.uniq(a).length !== a.length;
+  arrayHasDuplicates: function (a: Array<string>) : boolean {
+      return !a.every(function(item, i){
+         return a.indexOf(item) === i;
+      });
   },
 
   makeResultsDir: function (bool: boolean, cb: Function): void {

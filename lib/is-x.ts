@@ -33,7 +33,7 @@ function isTransform(stream: any) : boolean {
 
 function isObservable(val: any) {
     return (val && typeof val.subscribe === 'function'
-    && val.constructor && /Observable/.test(val.constructor.name));
+    && val.constructor && (/Observable/.test(val.constructor.name) || /Subject/.test(val.constructor.name)));
 }
 
 ////////////////////////////

@@ -22,9 +22,8 @@
   },
   "homepage": "https://github.com/ORESoftware/suman-utils#readme",
   "dependencies": {
-    "async": "^2.0.0-rc.6",
+    "async": "^2.1.5",
     "colors": "^1.1.2",
-    "lodash": "^4.13.1",
     "mkdirp": "^0.5.1",
     "residence": "latest",
     "rimraf": "^2.6.0",
@@ -38,6 +37,7 @@
     "@types/node": "^7.0.0",
     "@types/whatwg-fetch": "0.0.33",
     "node-check-fast": "latest",
-    "suman": "github:sumanjs/suman#dev"
+    "rxjs": "^5.2.0",
+    "suman": "latest"
   }
 }

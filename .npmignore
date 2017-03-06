@@ -1,8 +1,12 @@
 node_modules/
 test/
 yarn.lock
-test.sh
 suman.conf.js
 .idea
 *.sh
 *.ts
+!dts/*.d.ts
+*.txt
+*.log
+tsconfig*.json
+*.md
