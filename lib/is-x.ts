@@ -1,7 +1,6 @@
 'use strict';
 import {Stream} from "stream";
 
-
 function isStream(stream: any): boolean {
     return isBasic(stream) && (isWritable(stream) || IsReadable(stream));
 }
@@ -46,7 +45,7 @@ function isSubscriber(val: any) {
 }
 
 
-module.exports = {
+export = {
     isObservable,
     isSubscriber,
     isStream

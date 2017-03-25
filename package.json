@@ -3,6 +3,7 @@
   "version": "0.0.73104",
   "description": "Shared module within the Suman test runner ecosystem",
   "main": "lib/all.js",
+  "typings": "lib/all.d.ts",
   "scripts": {
     "test": "suman"
   },
@@ -33,7 +34,6 @@
     "@types/async": "^2.0.38",
     "@types/core-js": "^0.9.35",
     "@types/immutable": "^3.8.7",
-    "@types/lodash": "^4.14.50",
     "@types/node": "^7.0.0",
     "@types/whatwg-fetch": "0.0.33",
     "node-check-fast": "latest",

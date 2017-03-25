@@ -113,7 +113,7 @@ module.exports = Object.freeze({
       port: 6969
     },
 
-    '###': {   /// replace this with user's local machines os.hostname()
+    'ALEXAMIL-M-914U': {   /// replace this with user's local machines os.hostname()
       host: '127.0.0.1',
       port: 6969
     },

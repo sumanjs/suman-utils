@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "baseUrl": ".",
     "paths": {
     },
@@ -17,7 +18,16 @@
     "lib": [
       "es2015",
       "es2016"
-    ]
+    ],
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "newLine": "LF",
+    "noUnusedParameters": false,
+    "emitDecoratorMetadata": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
   },
   "compileOnSave": false,
   "include": [

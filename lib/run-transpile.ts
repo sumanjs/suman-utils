@@ -18,7 +18,6 @@ const colors = require('colors/safe');
 const debug = require('suman-debug')('s:utils-transpile');
 
 //project
-import * as dts from '../d.ts/global';
 const sumanUtils = require('./all');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,15 +34,17 @@ const transpileLogDir = process.env.SUMAN_TRANSPILE_LOG_PATH;
 
 // debug('=> (in suman-utils) => process.env =', process.env);
 
-////////////////////////////////////////////
+//////////////////////////////////////////////////////
 
 
-interface Opts {
+export interface IOpts {
     babelExec?: string,
     all?: boolean
 }
 
-function run(paths: Array<string>, opts: Opts, cb: Function): void {
+//////////////////////////////////////////////////////
+
+export default function run(paths: Array<string>, opts: IOpts, cb: Function): void {
 
     const sumanOpts = global.sumanOpts;
 
@@ -284,4 +285,3 @@ function run(paths: Array<string>, opts: Opts, cb: Function): void {
 
 }
 
-module.exports = run;
