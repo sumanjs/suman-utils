@@ -1,6 +1,7 @@
-export interface MapToTargetDirResult {
-    originalPath: string;
-    targetPath: string;
+declare namespace sumanUtils {
+    interface MapToTargetDirResult {
+        originalPath: string;
+        targetPath: string;
+    }
 }
-declare const su: any;
-export default su;
+export = sumanUtils;

@@ -17,7 +17,7 @@ const debug = require('suman-debug')('s:utils');
 const mkdirp = require('mkdirp');
 
 //project
-import * as dts from '../d.ts/global';
+import * as dts from '../dts/global.d.ts';
 const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
@@ -26,16 +26,12 @@ import runTranspile from './run-transpile';
 
 /////////////////////////////////////////////////////////////////////////////
 
-export interface MapToTargetDirResult {
-  originalPath: string,
-  targetPath: string
-}
 
 let globalProjectRoot: string;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const su = Object({
+const su = {
 
   isStream: isX.isStream,
   isObservable: isX.isObservable,
@@ -50,7 +46,7 @@ const su = Object({
     return global.sumanOpts.verbosity < val;
   },
 
-  mapToTargetDir: function (item: string): MapToTargetDirResult {
+  mapToTargetDir: function (item: string): sumanUtils.MapToTargetDirResult {
 
     const projectRoot = process.env.SUMAN_PROJECT_ROOT;
 
@@ -120,6 +116,8 @@ const su = Object({
       mkdirp(p, cb);
     }, cb);
   },
+
+  //
 
   getArrayOfDirsToBuild: function (testTargetPath: string, p: string): string | undefined {
 
@@ -328,11 +326,11 @@ const su = Object({
 
   isArrowFunction: function (fn: Function): boolean {
     //TODO this will not work for async functions!
-    return String(fn).indexOf('function') !== 0;
+    return String(fn).trim().indexOf('function') !== 0;
   },
 
   isAsyncFn: function (fn: Function): boolean {
-    return String(fn).indexOf('async ') === 0;
+    return String(fn).trim().indexOf('async ') === 0;
   },
 
 
@@ -413,7 +411,7 @@ const su = Object({
     return true;
   },
 
-  arrayHasDuplicates: function (a: Array<string>): boolean {
+  arrayHasDuplicates: function (a: Array<any>): boolean {
     return !a.every(function (item, i) {
       return a.indexOf(item) === i;
     });
@@ -504,9 +502,16 @@ const su = Object({
     }
   }
 
-});
+};
 
 
-su.default = su;
-module.exports = su;
-export default su;
+
+namespace sumanUtils {
+  export interface MapToTargetDirResult {
+    originalPath: string,
+    targetPath: string
+  }
+}
+
+
+export = sumanUtils;

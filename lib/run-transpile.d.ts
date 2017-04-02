@@ -1,5 +1,12 @@
-export interface IOpts {
-    babelExec?: string;
-    all?: boolean;
+declare namespace run {
+    interface Run {
+        (paths: Array<string>, opts: run.IOpts, cb: Function): void;
+        default: Run;
+    }
+    interface IOpts {
+        babelExec?: string;
+        all?: boolean;
+    }
 }
-export default function run(paths: Array<string>, opts: IOpts, cb: Function): void;
+declare const run: run.Run;
+export = run;
