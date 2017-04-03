@@ -440,7 +440,7 @@ const su = {
       });
     }
 
-    let results : Array<any>= [];
+    let results: Array<any> = [];
     let upPath: string = pth;
 
     async.whilst(function () {
@@ -455,28 +455,27 @@ const su = {
 
         run: function (cb: Function) {
           let p = path.resolve(upPath + '/@run.sh');
-          console.log('p => ', p);
           fs.stat(p, function (err, stats) {
             let z = (stats && stats.isFile()) ? {run: p} : undefined;
             z && results.push(z);
-            upPath = path.resolve(upPath + '/../');
             cb();
           });
         },
 
         transform: function (cb: Function) {
           let p = path.resolve(upPath + '/@transform.sh');
-          console.log('p => ', p);
           fs.stat(p, function (err, stats) {
             let z = (stats && stats.isFile()) ? {transform: p} : undefined;
             z && results.push(z);
-            upPath = path.resolve(upPath + '/../');
             cb();
           });
         }
 
 
-      }, cb);
+      }, function (err: Error) {
+        upPath = path.resolve(upPath + '/../');
+        cb(err);
+      });
 
 
     }, function (err: Error) {
@@ -486,10 +485,12 @@ const su = {
       else {
         let obj = {};
         results.forEach(function (r) {
+          console.log('results => ', r);
           if (r) {
             obj = Object.assign(obj, r);
           }
         });
+        console.log('obj => ', obj);
         cb(null, obj);
       }
     });
