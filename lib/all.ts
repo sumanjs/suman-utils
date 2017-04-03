@@ -417,6 +417,87 @@ const su = {
     });
   },
 
+
+  findNearestRunAndTransform: function (root: string, pth: string, cb: Function) {
+
+    console.log(' => root =>', root);
+    console.log(' => path => ', pth);
+
+    const ret: any = {
+      run: null,
+      transform: null
+    };
+
+    try {
+      const isDir = fs.statSync(pth).isDirectory();
+      if (!isDir) {
+        pth = path.dirname(pth);
+      }
+    }
+    catch (err) {
+      return process.nextTick(function () {
+        cb(err);
+      });
+    }
+
+    let results : Array<any>= [];
+    let upPath: string = pth;
+
+    async.whilst(function () {
+
+      return upPath.length >= root.length;
+
+    }, function (cb: Function) {
+
+      console.log(' => oh no', upPath);
+
+      async.parallel({
+
+        run: function (cb: Function) {
+          let p = path.resolve(upPath + '/@run.sh');
+          console.log('p => ', p);
+          fs.stat(p, function (err, stats) {
+            let z = (stats && stats.isFile()) ? {run: p} : undefined;
+            z && results.push(z);
+            upPath = path.resolve(upPath + '/../');
+            cb();
+          });
+        },
+
+        transform: function (cb: Function) {
+          let p = path.resolve(upPath + '/@transform.sh');
+          console.log('p => ', p);
+          fs.stat(p, function (err, stats) {
+            let z = (stats && stats.isFile()) ? {transform: p} : undefined;
+            z && results.push(z);
+            upPath = path.resolve(upPath + '/../');
+            cb();
+          });
+        }
+
+
+      }, cb);
+
+
+    }, function (err: Error) {
+      if (err) {
+        cb(err);
+      }
+      else {
+        let obj = {};
+        results.forEach(function (r) {
+          if (r) {
+            obj = Object.assign(obj, r);
+          }
+        });
+        cb(null, obj);
+      }
+    });
+
+
+  },
+
+
   findSumanMarkers: function (types: Array<string>, root: string, files: Array<string>, cb: Function): void {
 
     const map: any = {};
@@ -505,8 +586,7 @@ const su = {
 };
 
 
-
-namespace sumanUtils {
+namespace su {
   export interface MapToTargetDirResult {
     originalPath: string,
     targetPath: string
@@ -514,4 +594,4 @@ namespace sumanUtils {
 }
 
 
-export = sumanUtils;
+export = su;

@@ -26,7 +26,7 @@ namespace run {
 
   export interface Run {
     (paths: Array<string>, opts: run.IOpts, cb: Function): void
-    default: Run;
+    default?: Run;
   }
 
   export interface IOpts {

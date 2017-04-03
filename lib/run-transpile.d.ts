@@ -1,7 +1,7 @@
 declare namespace run {
     interface Run {
         (paths: Array<string>, opts: run.IOpts, cb: Function): void;
-        default: Run;
+        default?: Run;
     }
     interface IOpts {
         babelExec?: string;
