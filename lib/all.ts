@@ -33,6 +33,7 @@ let globalProjectRoot: string;
 
 const su = {
 
+  default: undefined,
   isStream: isX.isStream,
   isObservable: isX.isObservable,
   isSubscriber: isX.isSubscriber,
@@ -46,7 +47,7 @@ const su = {
     return global.sumanOpts.verbosity < val;
   },
 
-  mapToTargetDir: function (item: string): sumanUtils.MapToTargetDirResult {
+  mapToTargetDir: function (item: string): su.MapToTargetDirResult {
 
     const projectRoot = process.env.SUMAN_PROJECT_ROOT;
 
@@ -501,6 +502,7 @@ const su = {
 
   findSumanMarkers: function (types: Array<string>, root: string, files: Array<string>, cb: Function): void {
 
+    //TODO: we can stop when we get to the end of all the files in files array
     const map: any = {};
 
     (function getMarkers(dir: string, cb: Function) {
@@ -520,7 +522,7 @@ const su = {
           fs.stat(item, function (err, stats) {
 
             if (err) {
-              console.log(' => probably a symlink => ', item);
+              console.log(' => [suman internal] => probably a symlink => ', item);
               return cb();
             }
 
@@ -594,5 +596,6 @@ namespace su {
   }
 }
 
-
+//
+su.default = su;
 export = su;
