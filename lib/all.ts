@@ -17,7 +17,8 @@ const debug = require('suman-debug')('s:utils');
 const mkdirp = require('mkdirp');
 
 //project
-import * as dts from '../dts/global.d.ts';
+const _suman = global.__suman = (global.__suman || {});
+import * as dts from '../dts/global';
 const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
@@ -40,11 +41,11 @@ const su = {
   runTranspile: runTranspile,
 
   vgt: function (val: number): boolean {
-    return global.sumanOpts.verbosity > val;
+    return _suman.sumanOpts && _suman.sumanOpts.verbosity > val;
   },
 
   vlt: function (val: number): boolean {
-    return global.sumanOpts.verbosity < val;
+    return _suman.sumanOpts && _suman.sumanOpts.verbosity < val;
   },
 
   mapToTargetDir: function (item: string): su.MapToTargetDirResult {
@@ -327,13 +328,12 @@ const su = {
 
   isArrowFunction: function (fn: Function): boolean {
     //TODO this will not work for async functions!
-    return String(fn).trim().indexOf('function') !== 0;
+    return fn && String(fn).trim().indexOf('function') !== 0;
   },
 
   isAsyncFn: function (fn: Function): boolean {
-    return String(fn).trim().indexOf('async ') === 0;
+    return fn && String(fn).trim().indexOf('async ') === 0;
   },
-
 
   defaultSumanHomeDir: function (): string {
     return path.normalize(path.resolve((process.env.HOME || process.env.USERPROFILE) + path.sep + 'suman_data'));

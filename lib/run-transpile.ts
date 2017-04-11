@@ -18,7 +18,7 @@ const colors = require('colors/safe');
 const debug = require('suman-debug')('s:utils-transpile');
 
 //project
-
+const _suman = global.__suman = (global.__suman || {});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -50,7 +50,7 @@ const run : run.Run = function (paths: Array<string>, opts: run.IOpts, cb: Funct
   const transpileLogDir = process.env.SUMAN_TRANSPILE_LOG_PATH;
   const projectRoot = process.env.SUMAN_PROJECT_ROOT;
   const sumanUtils = require('./all.js');
-  const sumanOpts = global.sumanOpts;
+  const sumanOpts = _suman.sumanOpts;
 
   // let fd;
   //
