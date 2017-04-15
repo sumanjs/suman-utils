@@ -28,7 +28,8 @@
     "mkdirp": "^0.5.1",
     "residence": "latest",
     "rimraf": "^2.6.0",
-    "suman-debug": "latest"
+    "suman-debug": "latest",
+    "suman-browser-polyfills": "latest"
   },
   "devDependencies": {
     "@types/async": "^2.0.38",
