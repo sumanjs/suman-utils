@@ -1,9 +1,13 @@
 'use strict';
 
+//polyfills
+const process = require('suman-browser-polyfills/modules/process');
+const global = require('suman-browser-polyfills/modules/global');
+
+
 process.on('warning', function (w: any) {
   console.error('\n', ' => Suman-Utils warning => ', (w.stack || w), '\n');
 });
-
 
 //core
 import * as fs from 'fs';

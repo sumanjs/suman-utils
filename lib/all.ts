@@ -1,5 +1,10 @@
 'use strict';
 
+//polyfills
+const process = require('suman-browser-polyfills/modules/process');
+const global = require('suman-browser-polyfills/modules/global');
+
+
 process.on('warning', function (w: any) {
   console.error('\n', ' => Suman warning => ', (w.stack || w), '\n');
 });
@@ -510,6 +515,8 @@ const su = {
       fs.readdir(dir, function (err, items) {
 
         if (err) {
+          console.log(' => [suman internal] => probably a symlink => ', dir);
+          console.error(err.stack || err);
           return cb(err);
         }
 
@@ -523,6 +530,7 @@ const su = {
 
             if (err) {
               console.log(' => [suman internal] => probably a symlink => ', item);
+              console.error(err.stack || err);
               return cb();
             }
 
