@@ -26,7 +26,6 @@ const _suman = global.__suman = (global.__suman || {});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 export interface Run {
   (paths: Array<string>, opts: IOpts, cb: Function): void
   default?: Run;
@@ -36,7 +35,6 @@ export interface IOpts {
   babelExec?: string,
   all?: boolean
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,16 +52,6 @@ export const $runTranspile: Run = function (paths: Array<string>, opts: IOpts, c
   const projectRoot = process.env.SUMAN_PROJECT_ROOT;
   const sumanUtils = require('./all.js');
   const sumanOpts = _suman.sumanOpts;
-
-  // let fd;
-  //
-  // try {
-  //   fd = fs.openSync(process.env.SUMAN_TRANSPILE_LOG_PATH,{});
-  // }
-  // catch (err) {
-  //   console.error(err.stack || err);
-  // }
-
   const strm = fs.createWriteStream(process.env.SUMAN_TRANSPILE_LOG_PATH);
   let errorExperiencedInATLeastOneChildProcess = false;
 
@@ -213,7 +201,7 @@ export const $runTranspile: Run = function (paths: Array<string>, opts: IOpts, c
       debug(' => Item to be transpiled:', item);
       debug(' => fsItem:', fsItem);
 
-      fs.stat(item, function (err: Error, stats: Object) {
+      fs.stat(item, function (err: Error, stats) {
 
         if (err) {
           return cb(err);
