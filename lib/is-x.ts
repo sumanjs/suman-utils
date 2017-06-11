@@ -1,7 +1,7 @@
 'use strict';
 import {Stream} from "stream";
 
-function isStream(stream: any): boolean {
+export function isStream(stream: any): boolean {
     return isBasic(stream) && (isWritable(stream) || IsReadable(stream));
 }
 
@@ -30,23 +30,17 @@ function isTransform(stream: any) : boolean {
 
 /////////////
 
-function isObservable(val: any) {
+export function isObservable(val: any) {
     return (val && typeof val.subscribe === 'function'
     && val.constructor && (/Observable/.test(val.constructor.name) || /Subject/.test(val.constructor.name)));
 }
 
 ////////////////////////////
 
-function isSubscriber(val: any) {
+export function isSubscriber(val: any) {
 
     return (val && typeof val.subscribe !== 'function' && typeof val.usubscribe !== 'function'
     && typeof val._next === 'function' && typeof val._error === 'function' && typeof val._complete === 'function');
 
 }
 
-
-export = {
-    isObservable,
-    isSubscriber,
-    isStream
-};

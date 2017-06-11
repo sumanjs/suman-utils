@@ -26,22 +26,21 @@ const _suman = global.__suman = (global.__suman || {});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace run {
 
-  export interface Run {
-    (paths: Array<string>, opts: run.IOpts, cb: Function): void
-    default?: Run;
-  }
-
-  export interface IOpts {
-    babelExec?: string,
-    all?: boolean
-  }
+export interface Run {
+  (paths: Array<string>, opts: IOpts, cb: Function): void
+  default?: Run;
 }
+
+export interface IOpts {
+  babelExec?: string,
+  all?: boolean
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-const run : run.Run = function (paths: Array<string>, opts: run.IOpts, cb: Function): void {
+export const $runTranspile: Run = function (paths: Array<string>, opts: IOpts, cb: Function): void {
 
   console.log(' => Paths to transpile => \n', util.inspect(paths));
 
@@ -294,7 +293,5 @@ const run : run.Run = function (paths: Array<string>, opts: run.IOpts, cb: Funct
 
 };
 
-run.default = run;
-export = run;
 
 

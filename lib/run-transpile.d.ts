@@ -1,12 +1,9 @@
-declare namespace run {
-    interface Run {
-        (paths: Array<string>, opts: run.IOpts, cb: Function): void;
-        default?: Run;
-    }
-    interface IOpts {
-        babelExec?: string;
-        all?: boolean;
-    }
+export interface Run {
+    (paths: Array<string>, opts: IOpts, cb: Function): void;
+    default?: Run;
 }
-declare const run: run.Run;
-export = run;
+export interface IOpts {
+    babelExec?: string;
+    all?: boolean;
+}
+export declare const $runTranspile: Run;

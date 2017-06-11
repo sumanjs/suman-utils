@@ -1,6 +1,3 @@
-declare var _default: {
-    isObservable: (val: any) => boolean;
-    isSubscriber: (val: any) => boolean;
-    isStream: (stream: any) => boolean;
-};
-export = _default;
+export declare function isStream(stream: any): boolean;
+export declare function isObservable(val: any): boolean;
+export declare function isSubscriber(val: any): boolean;

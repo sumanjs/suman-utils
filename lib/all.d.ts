@@ -1,7 +1,39 @@
-declare namespace sumanUtils {
-    interface MapToTargetDirResult {
-        originalPath: string;
-        targetPath: string;
-    }
+export interface MapToTargetDirResult {
+    originalPath: string;
+    targetPath: string;
 }
-export = sumanUtils;
+export declare const isStream: any;
+export declare const isObservable: any;
+export declare const isSubscriber: any;
+export declare const runTranspile: any;
+export declare const vgt: (val: number) => boolean;
+export declare const vlt: (val: number) => boolean;
+export declare const mapToTargetDir: (item: string) => MapToTargetDirResult;
+export declare function isSumanSingleProcess(): boolean;
+export declare function isSumanDebug(): boolean;
+export declare function runAssertionToCheckForSerialization(val: Object): void;
+export declare function buildDirsWithMkDirp(paths: Array<string>, cb: Function): void;
+export declare function getArrayOfDirsToBuild(testTargetPath: string, p: string): string | undefined;
+export declare const checkIfPathAlreadyExistsInList: (paths: string[], p: string, index: number) => boolean;
+export declare const buildDirs: (dirs: string[], cb: Function) => void;
+export declare const padWithFourSpaces: () => string;
+export declare function padWithXSpaces(x: number): string;
+export declare function removePath(p1: string, p2: string): string;
+export declare function findSharedPath(p1: string, p2: string): string;
+export declare function removeSharedRootPath(paths: Array<string>): Array<Array<string>>;
+export declare function checkForValInStr(str: string, regex: RegExp, count: number): boolean;
+export declare function isGeneratorFn2(fn: Function): boolean;
+export declare function isGeneratorFn(fn: Function): boolean;
+export declare function isArrowFunction(fn: Function): boolean;
+export declare function isAsyncFn(fn: Function): boolean;
+export declare function defaultSumanHomeDir(): string;
+export declare function defaultSumanResultsDir(): string;
+export declare function getHomeDir(): string;
+export declare function findProjectRootfindProjRoot(p: string): string;
+export declare const once: (ctx: Object, fn: Function) => Function;
+export declare const onceAsync: (ctx: Object, fn: Function) => Function;
+export declare const checkForEquality: (arr1: string[], arr2: string[]) => boolean;
+export declare const arrayHasDuplicates: (a: any[]) => boolean;
+export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
+export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: Function) => void;
+export declare const makeResultsDir: (bool: boolean, cb: Function) => void;
