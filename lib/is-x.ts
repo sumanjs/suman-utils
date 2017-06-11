@@ -1,9 +1,6 @@
 'use strict';
 import {Stream} from "stream";
 
-export function isStream(stream: any): boolean {
-    return isBasic(stream) && (isWritable(stream) || IsReadable(stream));
-}
 
 function isBasic(stream: Stream) : boolean {
     return stream !== null && typeof stream === 'object' && typeof stream.pipe === 'function';
@@ -28,14 +25,17 @@ function isTransform(stream: any) : boolean {
         typeof stream._transformState === 'object';
 }
 
-/////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+export function isStream(stream: any): boolean {
+    return isBasic(stream) && (isWritable(stream) || IsReadable(stream));
+}
+
 
 export function isObservable(val: any) {
     return (val && typeof val.subscribe === 'function'
     && val.constructor && (/Observable/.test(val.constructor.name) || /Subject/.test(val.constructor.name)));
 }
-
-////////////////////////////
 
 export function isSubscriber(val: any) {
 
@@ -43,4 +43,5 @@ export function isSubscriber(val: any) {
     && typeof val._next === 'function' && typeof val._error === 'function' && typeof val._complete === 'function');
 
 }
+
 
