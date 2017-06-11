@@ -38,8 +38,12 @@ export interface MapToTargetDirResult {
 
 let globalProjectRoot: string;
 
-///////////////////////////////////////////////////////////////////////////////
 
+///////////// support node style imports //////////////////////////////////////////////////
+
+export default module.exports;
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
@@ -262,7 +266,7 @@ export const findSharedPath = function (p1: string, p2: string): string {
   return path.resolve(path.sep + shared.join(path.sep));
 };
 
-export const removeSharedRootPathfunction = function (paths: Array<string>): Array<Array<string>> {
+export const removeSharedRootPath = function (paths: Array<string>): Array<Array<string>> {
 
   if (paths.length < 2) {   //  paths = ['just/a/single/path/so/letsreturnit']
     return paths.map(function (p) {
@@ -350,12 +354,14 @@ export const getHomeDir = function (): string {
   return process.env[(process.platform === 'win32' ? 'USERPROFILE' : 'HOME')];
 };
 
-export const findProjectRootfindProjRoot = function (p: string): string {
+export const findProjectRoot = function (p: string): string {
   if (!globalProjectRoot) {
     globalProjectRoot = residence.findProjectRoot(p);
   }
   return globalProjectRoot;
 };
+
+export const findProjRoot = findProjectRoot;
 
 export const once = function (ctx: Object, fn: Function): Function {
 
