@@ -1,5 +1,7 @@
 'use strict';
 
+import {$runTranspile, Run} from './run-transpile';
+
 //polyfills
 const process = require('suman-browser-polyfills/modules/process');
 const global = require('suman-browser-polyfills/modules/global');
@@ -27,7 +29,6 @@ const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
-import {$runTranspile} from './run-transpile';
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +49,7 @@ export default module.exports;
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
-export const runTranspile = $runTranspile;
+export const runTranspile: Run = $runTranspile;
 
 export const vgt = function (val: number): boolean {
   return _suman.sumanOpts && _suman.sumanOpts.verbosity > val;

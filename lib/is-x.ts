@@ -38,10 +38,8 @@ export function isObservable(val: any) {
 }
 
 export function isSubscriber(val: any) {
-
     return (val && typeof val.subscribe !== 'function' && typeof val.usubscribe !== 'function'
     && typeof val._next === 'function' && typeof val._error === 'function' && typeof val._complete === 'function');
-
 }
 
 
