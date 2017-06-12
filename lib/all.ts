@@ -40,12 +40,6 @@ export interface MapToTargetDirResult {
 let globalProjectRoot: string;
 
 
-///////////// support node style imports //////////////////////////////////////////////////
-
-export default module.exports;
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
@@ -598,6 +592,13 @@ export const makeResultsDir = function (bool: boolean, cb: Function): void {
   }
 };
 
+
+///////////// support node style imports ////////////////////////////////////////////////
+
+let $exports = module.exports;
+export default $exports;
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 

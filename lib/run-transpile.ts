@@ -24,12 +24,6 @@ const debug = require('suman-debug')('s:utils-transpile');
 //project
 const _suman = global.__suman = (global.__suman || {});
 
-///////////// support node style import //////////////////////////////////////////////////
-
-export default module.exports;
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
 export interface Run {
   (paths: Array<string>, opts: IOpts, cb: Function): void
   default?: Run;
@@ -284,6 +278,13 @@ export const $runTranspile: Run = function (paths, opts, cb) {
   });
 
 };
+
+///////////// support node style imports //////////////////////////////////////////////////
+
+let $exports = module.exports;
+export default $exports;
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 

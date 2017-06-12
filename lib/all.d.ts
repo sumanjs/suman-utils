@@ -3,8 +3,6 @@ export interface MapToTargetDirResult {
     originalPath: string;
     targetPath: string;
 }
-declare var _default: any;
-export default _default;
 export declare const isStream: any;
 export declare const isObservable: any;
 export declare const isSubscriber: any;
@@ -41,3 +39,5 @@ export declare const arrayHasDuplicates: (a: any[]) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
 export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: Function) => void;
 export declare const makeResultsDir: (bool: boolean, cb: Function) => void;
+declare let $exports: any;
+export default $exports;
