@@ -579,17 +579,18 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
 };
 
 export const makeResultsDir = function (bool: boolean, cb: Function): void {
-
   if (!bool) {
     process.nextTick(cb);
   }
   else {
-
     process.nextTick(function () {
       cb(null);
     });
-
   }
+};
+
+export const isObject = function(v: any){
+  return v && typeof v === 'object' && !Array.isArray(v);
 };
 
 

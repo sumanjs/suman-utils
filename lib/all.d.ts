@@ -39,5 +39,6 @@ export declare const arrayHasDuplicates: (a: any[]) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
 export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: Function) => void;
 export declare const makeResultsDir: (bool: boolean, cb: Function) => void;
+export declare const isObject: (v: any) => boolean;
 declare let $exports: any;
 export default $exports;
