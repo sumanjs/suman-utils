@@ -26,7 +26,6 @@ const _suman = global.__suman = (global.__suman || {});
 
 export interface Run {
   (paths: Array<string>, opts: IOpts, cb: Function): void
-  default?: Run;
 }
 
 export interface IOpts {
