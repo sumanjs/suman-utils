@@ -1,5 +1,5 @@
-node_modules/
-test/
+node_modules
+test
 yarn.lock
 suman.conf.js
 .idea
