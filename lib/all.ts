@@ -6,7 +6,6 @@ import {$runTranspile, Run} from './run-transpile';
 const process = require('suman-browser-polyfills/modules/process');
 const global = require('suman-browser-polyfills/modules/global');
 
-
 process.on('warning', function (w: any) {
   console.error('\n', ' => Suman warning => ', (w.stack || w), '\n');
 });
@@ -38,7 +37,6 @@ export interface MapToTargetDirResult {
 }
 
 let globalProjectRoot: string;
-
 
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
@@ -416,13 +414,11 @@ export const checkForEquality = function (arr1: Array<string>, arr2: Array<strin
   return true;
 };
 
-
 export const arrayHasDuplicates = function (a: Array<any>): boolean {
   return !a.every(function (item, i) {
     return a.indexOf(item) === i;
   });
 };
-
 
 export const findNearestRunAndTransform = function (root: string, pth: string, cb: Function) {
 
@@ -477,12 +473,10 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
         });
       }
 
-
     }, function (err: Error) {
       upPath = path.resolve(upPath + '/../');
       cb(err);
     });
-
 
   }, function (err: Error) {
     if (err) {
@@ -503,11 +497,37 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
 
 };
 
+export interface IMapValue {
+  '@transform.sh?': boolean,
+  '@run.sh?': boolean,
+  '@target?': boolean,
+  '@src?': boolean
+}
 
-export const findSumanMarkers = function (types: Array<string>, root: string, files: Array<string>, cb: Function): void {
+export interface IMap {
+  [key: string]: IMapValue
+}
+
+export interface IMapCallback {
+  (err: Error | null, map?: IMap): void
+}
+
+export const findSumanMarkers = function (types: Array<string>, root: string, files: Array<string>, cb: IMapCallback): void {
 
   //TODO: we can stop when we get to the end of all the files in files array
   const map: any = {};
+
+  let addItem = function(item: string): void {
+    let filename = path.basename(item);
+    types.forEach(function (t) {
+      if (filename === t) {
+        if (!map[path.dirname(item)]) {
+          map[path.dirname(item)] = {};
+        }
+        map[path.dirname(item)][t] = true;
+      }
+    });
+  };
 
   (function getMarkers(dir: string, cb: Function) {
 
@@ -534,21 +554,13 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
           }
 
           if (stats.isFile()) {
-            let filename = path.basename(item);
-            types.forEach(function (t) {
-              if (filename === t) {
-                if (!map[path.dirname(item)]) {
-                  map[path.dirname(item)] = {};
-                }
-                map[path.dirname(item)][t] = true;
-              }
-            });
-
+            addItem(item);
             cb();
           }
           else if (stats.isDirectory()) {
             //TODO: stop here if this item is deeper than any of the files passed in
             if (!/node_modules/.test(String(item)) && !/\/.git\//.test(String(item))) {
+              addItem(item);
               getMarkers(item, cb);
             }
             else {
@@ -589,10 +601,9 @@ export const makeResultsDir = function (bool: boolean, cb: Function): void {
   }
 };
 
-export const isObject = function(v: any){
+export const isObject = function (v: any) {
   return v && typeof v === 'object' && !Array.isArray(v);
 };
-
 
 ///////////// support node style imports ////////////////////////////////////////////////
 

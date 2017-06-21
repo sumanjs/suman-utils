@@ -1,6 +1,5 @@
 export interface Run {
     (paths: Array<string>, opts: IOpts, cb: Function): void;
-    default?: Run;
 }
 export interface IOpts {
     babelExec?: string;

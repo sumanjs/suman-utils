@@ -37,7 +37,19 @@ export declare const onceAsync: (ctx: Object, fn: Function) => Function;
 export declare const checkForEquality: (arr1: string[], arr2: string[]) => boolean;
 export declare const arrayHasDuplicates: (a: any[]) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
-export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: Function) => void;
+export interface IMapValue {
+    '@transform.sh?': boolean;
+    '@run.sh?': boolean;
+    '@target?': boolean;
+    '@src?': boolean;
+}
+export interface IMap {
+    [key: string]: IMapValue;
+}
+export interface IMapCallback {
+    (err: Error | null, map?: IMap): void;
+}
+export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: IMapCallback) => void;
 export declare const makeResultsDir: (bool: boolean, cb: Function) => void;
 export declare const isObject: (v: any) => boolean;
 declare let $exports: any;
