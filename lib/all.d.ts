@@ -3,6 +3,10 @@ export interface MapToTargetDirResult {
     originalPath: string;
     targetPath: string;
 }
+export interface INearestRunAndTransformRet {
+    run: string;
+    transform: string;
+}
 export declare const isStream: any;
 export declare const isObservable: any;
 export declare const isSubscriber: any;
@@ -34,10 +38,12 @@ export declare const findProjectRoot: (p: string) => string;
 export declare const findProjRoot: (p: string) => string;
 export declare const once: (ctx: Object, fn: Function) => Function;
 export declare const onceAsync: (ctx: Object, fn: Function) => Function;
+export declare const makePathExecutable: (runPath: string, cb: Function) => void;
 export declare const checkForEquality: (arr1: string[], arr2: string[]) => boolean;
 export declare const arrayHasDuplicates: (a: any[]) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
 export interface IMapValue {
+    [key: string]: boolean;
     '@transform.sh?': boolean;
     '@run.sh?': boolean;
     '@target?': boolean;

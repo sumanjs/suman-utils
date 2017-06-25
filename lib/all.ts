@@ -36,6 +36,16 @@ export interface MapToTargetDirResult {
   targetPath: string
 }
 
+export interface INearestRunAndTransformRet {
+  run: string,
+  transform: string
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+
+
+
 let globalProjectRoot: string;
 
 export const isStream = isX.isStream;
@@ -396,6 +406,16 @@ export const onceAsync = function (ctx: Object, fn: Function): Function {
   }
 };
 
+export const makePathExecutable = function(runPath: string,cb: Function){
+
+  if(!runPath){
+     process.nextTick(cb);
+  }
+  else{
+    fs.chmod(runPath, 511, cb);
+  }
+};
+
 export const checkForEquality = function (arr1: Array<string>, arr2: Array<string>): boolean {
 
   if (arr1.length !== arr2.length) {
@@ -422,14 +442,6 @@ export const arrayHasDuplicates = function (a: Array<any>): boolean {
 
 export const findNearestRunAndTransform = function (root: string, pth: string, cb: Function) {
 
-  console.log(' => root =>', root);
-  console.log(' => path => ', pth);
-
-  const ret: any = {
-    run: null,
-    transform: null
-  };
-
   try {
     const isDir = fs.statSync(pth).isDirectory();
     if (!isDir) {
@@ -437,9 +449,7 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
     }
   }
   catch (err) {
-    return process.nextTick(function () {
-      cb(err);
-    });
+    return process.nextTick(cb, err);
   }
 
   let results: Array<any> = [];
@@ -451,15 +461,14 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
 
   }, function (cb: Function) {
 
-    console.log(' => oh no', upPath);
-
     async.parallel({
 
       run: function (cb: Function) {
         let p = path.resolve(upPath + '/@run.sh');
         fs.stat(p, function (err, stats) {
           let z = (stats && stats.isFile()) ? {run: p} : undefined;
-          z && results.push(z);
+          // z && results.push(z);
+          z && results.unshift(z);
           cb();
         });
       },
@@ -468,7 +477,8 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
         let p = path.resolve(upPath + '/@transform.sh');
         fs.stat(p, function (err, stats) {
           let z = (stats && stats.isFile()) ? {transform: p} : undefined;
-          z && results.push(z);
+          // z && results.push(z);
+          z && results.unshift(z);
           cb();
         });
       }
@@ -480,24 +490,31 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
 
   }, function (err: Error) {
     if (err) {
-      cb(err);
+      return cb(err);
     }
-    else {
-      let obj = {};
-      results.forEach(function (r) {
-        console.log('results => ', r);
-        if (r) {
-          obj = Object.assign(obj, r);
-        }
-      });
-      console.log('obj => ', obj);
-      cb(null, obj);
-    }
+
+    // let obj : INearestRunAndTransformRet = {};
+    //
+    // results.forEach(function (r) {
+    //   console.log('results => ', r);
+    //   if (r) {
+    //     Object.assign(obj, r);
+    //   }
+    // });
+
+    let ret : INearestRunAndTransformRet= results.reduce(function(prev,curr){
+          return (curr ? Object.assign(prev, curr) : prev);
+    }, {});
+
+    console.log('ret obj => ', ret);
+    cb(null, ret);
+
   });
 
 };
 
 export interface IMapValue {
+  [key: string]: boolean,
   '@transform.sh?': boolean,
   '@run.sh?': boolean,
   '@target?': boolean,
@@ -517,7 +534,7 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
   //TODO: we can stop when we get to the end of all the files in files array
   const map: any = {};
 
-  let addItem = function(item: string): void {
+  let addItem = function (item: string): void {
     let filename = path.basename(item);
     types.forEach(function (t) {
       if (filename === t) {

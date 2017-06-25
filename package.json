@@ -6,7 +6,7 @@
   "typings": "lib/all.d.ts",
   "types": "lib/all.d.ts",
   "scripts": {
-    "test": "suman"
+    "test": "./@test.sh"
   },
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
     "@types/node": "^7.0.0",
     "@types/whatwg-fetch": "0.0.33",
     "node-check-fast": "latest",
-    "rxjs": "^5.2.0",
-    "suman": "latest"
+    "rxjs": "^5.2.0"
   }
 }

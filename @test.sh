@@ -10,4 +10,12 @@ fi
 echo "transpiling from TypeScript to JS..."
 ./@transpile.sh
 echo "Now we are starting the Suman tests"
-./node_modules/.bin/suman test/target
+
+
+SUMAN=$(which suman);
+
+if [[ -z ${SUMAN} ]]; then
+npm install -g suman
+fi
+
+suman test/target

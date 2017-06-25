@@ -1,0 +1,16 @@
+{
+  "linkToItself": true,
+  "searchRoots": [
+    "$HOME/WebstormProjects"
+  ],
+  "ignore": [
+    "/node_modules/",
+    "/.git/"
+  ],
+  "list": [
+    "residence",
+    "suman-utils",
+    "suman-debug",
+    "suman-browser-polyfills"
+  ]
+}
