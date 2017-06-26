@@ -28,6 +28,7 @@ const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
+import allDebug from './we-are-debugging'
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -45,9 +46,9 @@ export interface INearestRunAndTransformRet {
 /////////////////////////////////////////////////////////////////////////////////
 
 
-
 let globalProjectRoot: string;
 
+export const weAreDebugging = allDebug.weAreDebugging;
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;

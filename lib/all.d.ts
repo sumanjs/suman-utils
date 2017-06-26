@@ -7,6 +7,7 @@ export interface INearestRunAndTransformRet {
     run: string;
     transform: string;
 }
+export declare const weAreDebugging: any;
 export declare const isStream: any;
 export declare const isObservable: any;
 export declare const isSubscriber: any;
