@@ -1,8 +1,6 @@
 
+const su = require('suman-utils');
 
-const obj ={
-  '"': 'bird'
-};
+console.log(su.getHomeDir());
 
-
-console.log(obj['"']);
+console.log(su.findProjectRoot(process.cwd()));
