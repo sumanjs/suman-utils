@@ -370,16 +370,15 @@ export const findProjRoot = findProjectRoot;
 export const once = function (ctx: Object, fn: Function): Function {
 
   let callable = true;
-
   return function callOnce(err: Error) {
     if (callable) {
       callable = false;
       return fn.apply(ctx, arguments);
     }
     else {
-      console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
+      _suman.logWarning('suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
       if (err) {
-        console.error(' => Suman warning => \n', err.stack || util.inspect(err));
+        _suman.logError('warning => ', err.stack || util.inspect(err));
       }
     }
   }
@@ -496,18 +495,14 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
 
     // let obj : INearestRunAndTransformRet = {};
     //
-    // results.forEach(function (r) {
-    //   console.log('results => ', r);
-    //   if (r) {
-    //     Object.assign(obj, r);
-    //   }
-    // });
+    results.forEach(function (r) {
+      console.log('results => ', r);
+    });
 
     let ret : INearestRunAndTransformRet= results.reduce(function(prev,curr){
           return (curr ? Object.assign(prev, curr) : prev);
     }, {});
 
-    console.log('ret obj => ', ret);
     cb(null, ret);
 
   });
