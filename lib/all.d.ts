@@ -1,4 +1,6 @@
+/// <reference types="node" />
 import { Run } from './run-transpile';
+import Timer = NodeJS.Timer;
 export interface MapToTargetDirResult {
     originalPath: string;
     targetPath: string;
@@ -38,6 +40,7 @@ export declare const getHomeDir: () => string;
 export declare const findProjectRoot: (p: string) => string;
 export declare const findProjRoot: (p: string) => string;
 export declare const once: (ctx: Object, fn: Function) => Function;
+export declare const onceTO: (ctx: Object, to: Timer, fn: Function) => Function;
 export declare const onceAsync: (ctx: Object, fn: Function) => Function;
 export declare const makePathExecutable: (runPath: string, cb: Function) => void;
 export declare const checkForEquality: (arr1: string[], arr2: string[]) => boolean;

@@ -29,6 +29,7 @@ const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
 import allDebug from './we-are-debugging'
+import Timer = NodeJS.Timer;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -77,15 +78,9 @@ export const mapToTargetDir = function (item: string): MapToTargetDirResult {
   let itemSplit = String(item).split(path.sep);
   itemSplit = itemSplit.filter(i => i); // get rid of pesky ['', first element
 
-  debug('itemSplit:', itemSplit);
-
   const originalLength = itemSplit.length;
   const paths = removeSharedRootPath([projectRoot, item]);
   const temp = paths[1][1];
-
-  debug(' => originalLength:', originalLength);
-  debug(' => testTargetDirLength:', testTargetDirLength);
-  debug(' => temp path:', temp);
 
   let splitted = temp.split(path.sep);
   splitted = splitted.filter(i => i); // get rid of pesky ['', first element
@@ -372,6 +367,24 @@ export const once = function (ctx: Object, fn: Function): Function {
   let callable = true;
   return function callOnce(err: Error) {
     if (callable) {
+      callable = false;
+      return fn.apply(ctx, arguments);
+    }
+    else {
+      _suman.logWarning('suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
+      if (err) {
+        _suman.logError('warning => ', err.stack || util.inspect(err));
+      }
+    }
+  }
+};
+
+export const onceTO = function (ctx: Object, to: Timer, fn: Function): Function {
+
+  let callable = true;
+  return function callOnce(err: Error) {
+    if (callable) {
+      clearTimeout(to);
       callable = false;
       return fn.apply(ctx, arguments);
     }
