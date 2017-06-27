@@ -16,6 +16,7 @@ export declare const isSubscriber: any;
 export declare const runTranspile: Run;
 export declare const vgt: (val: number) => boolean;
 export declare const vlt: (val: number) => boolean;
+export declare const checkStatsIsFile: (item: string) => boolean | null;
 export declare const mapToTargetDir: (item: string) => MapToTargetDirResult;
 export declare const isSumanSingleProcess: () => boolean;
 export declare const isSumanDebug: () => boolean;

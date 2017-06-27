@@ -43,9 +43,7 @@ export interface INearestRunAndTransformRet {
   transform: string
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////
-
 
 let globalProjectRoot: string;
 
@@ -61,6 +59,19 @@ export const vgt = function (val: number): boolean {
 
 export const vlt = function (val: number): boolean {
   return _suman.sumanOpts && _suman.sumanOpts.verbosity < val;
+};
+
+export const checkStatsIsFile = function (item: string) {
+
+  try {
+    return fs.statSync(item).isFile();
+  }
+  catch (err) {
+    if (vgt(2)) {
+      console.error(' => Suman verbose warning => ', err.stack);
+    }
+    return null;
+  }
 };
 
 export const mapToTargetDir = function (item: string): MapToTargetDirResult {
@@ -419,12 +430,12 @@ export const onceAsync = function (ctx: Object, fn: Function): Function {
   }
 };
 
-export const makePathExecutable = function(runPath: string,cb: Function){
+export const makePathExecutable = function (runPath: string, cb: Function) {
 
-  if(!runPath){
-     process.nextTick(cb);
+  if (!runPath) {
+    process.nextTick(cb);
   }
-  else{
+  else {
     fs.chmod(runPath, 511, cb);
   }
 };
@@ -512,8 +523,8 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
       console.log('results => ', r);
     });
 
-    let ret : INearestRunAndTransformRet= results.reduce(function(prev,curr){
-          return (curr ? Object.assign(prev, curr) : prev);
+    let ret: INearestRunAndTransformRet = results.reduce(function (prev, curr) {
+      return (curr ? Object.assign(prev, curr) : prev);
     }, {});
 
     cb(null, ret);
