@@ -21,7 +21,7 @@ addons:
     packages:
       - g++-4.8
 
-script: 'npm install istanbul && ./node_modules/.bin/istanbul cover test/src/exp.js'
+script: 'npm install istanbul && npm link && npm link suman-utils && ./node_modules/.bin/istanbul cover test/src/exp.js'
 after_script: 'npm install coveralls && cat coverage/lcov.info | ./node_modules/.bin/coveralls'
 notifications:
   email: false
