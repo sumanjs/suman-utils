@@ -8,6 +8,7 @@ export interface MapToTargetDirResult {
 export interface INearestRunAndTransformRet {
     run: string;
     transform: string;
+    config: string;
 }
 export declare const weAreDebugging: any;
 export declare const isStream: any;

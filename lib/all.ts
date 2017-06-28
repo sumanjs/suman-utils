@@ -41,6 +41,7 @@ export interface MapToTargetDirResult {
 export interface INearestRunAndTransformRet {
   run: string,
   transform: string
+  config: string
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -147,8 +148,6 @@ export const findApplicablePathsGivenTransform = function (sumanConfig: Object, 
             console.error(err.stack);
             return cb();
           }
-
-          console.log('fullPath => ', fullPath);
 
           if (stats.isFile()) {
             if (String(fullPath).match(/\/@src\//)) {
@@ -500,7 +499,7 @@ export const makePathExecutable = function (runPath: string, cb: Function) {
     process.nextTick(cb);
   }
   else {
-    fs.chmod(runPath, 511, cb);
+    fs.chmod(runPath, '777', cb);
   }
 };
 
@@ -569,6 +568,16 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
           z && results.unshift(z);
           cb();
         });
+      },
+
+      config: function (cb: Function) {
+        let p = path.resolve(upPath + '/@config.json');
+        fs.stat(p, function (err, stats) {
+          let z = (stats && stats.isFile()) ? {config: p} : undefined;
+          // z && results.push(z);
+          z && results.unshift(z);
+          cb();
+        });
       }
 
     }, function (err: Error) {
@@ -581,11 +590,6 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
       return cb(err);
     }
 
-    // let obj : INearestRunAndTransformRet = {};
-    //
-    results.forEach(function (r) {
-      console.log('results => ', r);
-    });
 
     let ret: INearestRunAndTransformRet = results.reduce(function (prev, curr) {
       return (curr ? Object.assign(prev, curr) : prev);
