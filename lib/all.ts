@@ -115,6 +115,70 @@ export const mapToTargetDir = function (item: string): MapToTargetDirResult {
   }
 };
 
+export const findApplicablePathsGivenTransform = function (sumanConfig: Object, transformPath: string, cb: Function) {
+
+  const dir = path.dirname(transformPath);
+  const results: Array<string> = [];
+
+  let firstPass = true;
+
+  (function searchDir(dir: string, cb: Function) {
+
+    fs.readdir(dir, function (err, items) {
+
+      if(firstPass === false){
+        for (let i = 0; i < items.length; i++) {
+          if (String(items[i]).match(/@transform.sh/)) {
+            return process.nextTick(cb);
+          }
+        }
+      }
+
+      // after this, we are in subdirectories
+      firstPass = false;
+
+      async.eachLimit(items, 3, function (item: string, cb: Function) {
+
+        const fullPath = path.resolve(dir + '/' + item);
+
+        fs.stat(fullPath, function (err, stats) {
+
+          if (err) {
+            console.error(err.stack);
+            return cb();
+          }
+
+          console.log('fullPath => ', fullPath);
+
+          if (stats.isFile()) {
+            if (String(fullPath).match(/\/@src\//)) {
+              results.push(fullPath);
+            }
+            return cb();
+          }
+
+          if (stats.isDirectory()) {
+            if (String(fullPath).match(/\/node_modules\//)) {
+              return cb();
+            }
+
+            searchDir(fullPath, cb);
+
+          }
+
+        });
+
+      }, cb);
+    });
+
+  })(dir, function (err: Error) {
+
+    cb(err, results);
+
+  });
+
+};
+
 export const isSumanSingleProcess = function (): boolean {
   return process.env.SUMAN_SINGLE_PROCESS === 'yes';
 };
