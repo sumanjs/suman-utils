@@ -4,7 +4,6 @@
 const process = require('suman-browser-polyfills/modules/process');
 const global = require('suman-browser-polyfills/modules/global');
 
-
 process.on('warning', function (w: any) {
   console.error('\n', ' => Suman-Utils warning => ', (w.stack || w), '\n');
 });
@@ -22,7 +21,7 @@ const colors = require('colors/safe');
 const debug = require('suman-debug')('s:utils-transpile');
 
 //project
-const _suman = global.__suman = (global.__suman || {});
+const _suman  = global.__suman = (global.__suman || {});
 
 export interface Run {
   (paths: Array<string>, opts: IOpts, cb: Function): void
@@ -34,7 +33,6 @@ export interface IOpts {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
 
 export const $runTranspile: Run = function (paths, opts, cb) {
 
@@ -69,8 +67,6 @@ export const $runTranspile: Run = function (paths, opts, cb) {
     console.log(' => Resolved path of babel executable => ', babelExec);
   }
 
-  debug(' => Istanbul executable located here => ', babelExec);
-
   assert.equal(testSrcDirLength, testTargetDirLength,
     ' => Suman usage error => "testSrcDir" and "testTargetDir" must be at the same level in your project => \n' +
     'See: http://oresoftware.github.io/suman');
@@ -95,58 +91,40 @@ export const $runTranspile: Run = function (paths, opts, cb) {
     //TODO: use rimraf or what not, instead of cp
     cp.exec('rm -rf ' + testTargetDir, function (err: Error, stdout: string, stderr: string) {
       if (err || String(stdout).match(/error/i) || String(stderr).match(/error/i)) {
-        cb(err || stdout || stderr);
+        return cb(err || stdout || stderr);
       }
-      else {
 
-        const cmd1 = ['cd', projectRoot, '&&', babelExec, testSrcDir, '--out-dir', testTargetDir, '--copy-files'].join(' ');
+      const cmd1 = ['cd', projectRoot, '&&', babelExec, testSrcDir, '--out-dir', testTargetDir, '--copy-files'].join(' ');
 
-        if (sumanOpts.verbose) {
-          console.log('\n', colors.cyan.bgBlack(' => Babel-cli command will be run:\n'), colors.yellow.bgBlack(cmd1), '\n');
+      if (sumanOpts.verbose) {
+        console.log('\n', colors.cyan.bgBlack(' => Babel-cli command will be run:\n'), colors.yellow.bgBlack(cmd1), '\n');
+      }
+
+      cp.exec(cmd1, function (err: Error) {
+        if (err || String(stdout).match(/error/i) || String(stderr).match(/error/i)) {
+          cb('You may need to run $ suman --use-babel to install the' +
+            ' necessary babel dependencies in your project so suman can use them => \n' + (err.stack || err) || stdout || stderr);
+        }
+        else {
+          console.log(stdout ? '\n' + stdout : '');
+          console.log(stderr ? '\n' + stderr : '');
+
+          if (!sumanOpts.sparse) {
+            console.log('\t' + colors.bgGreen.white.bold(' => Suman messsage => Your entire "' + testDir + '" directory '));
+            console.log('\t' + colors.bgGreen.white.bold(' was successfully transpiled/copied to the "' + testTargetDir + '" directory. ') + '\n');
+          }
+
+          setImmediate(function () {
+            cb(null, paths.map(sumanUtils.mapToTargetDir));
+          });
+
         }
 
-        cp.exec(cmd1, function (err: Error) {
-          if (err || String(stdout).match(/error/i) || String(stderr).match(/error/i)) {
-            cb('You may need to run $ suman --use-babel to install the' +
-              ' necessary babel dependencies in your project so suman can use them => \n' + (err.stack || err) || stdout || stderr);
-          }
-          else {
-            console.log(stdout ? '\n' + stdout : '');
-            console.log(stderr ? '\n' + stderr : '');
-
-            if (!sumanOpts.sparse) {
-              console.log('\t' + colors.bgGreen.white.bold(' => Suman messsage => Your entire "' + testDir + '" directory '));
-              console.log('\t' + colors.bgGreen.white.bold(' was successfully transpiled/copied to the "' + testTargetDir + '" directory. ') + '\n');
-            }
-
-            setImmediate(function () {
-              cb(null, paths.map(sumanUtils.mapToTargetDir));
-            });
-
-          }
-
-        });
-
-      }
+      });
 
     });
   }
   else {  //opts.all == false
-
-    debug('opts.all for transpile is false');
-
-    // here we want two things to be faster:
-    // no runner, so we save 100ms
-    // transpile and option to only copy only 1 .js file
-
-    // if (dirs.length > 0) {
-    // 	return cb(new Error('--optimized option uses the testSrcDir property of your config, ' +
-    // 		'but you specified a dir option as an argument.'))
-    // }
-    //
-    // dirs = [testDir];
-
-    debug('opts.sameDir for transpile is false');
 
     try {
       assert(paths.length > 0, colors.bgBlack.yellow(' => Suman error => please pass at least one test file path in your command.'));
@@ -173,13 +151,9 @@ export const $runTranspile: Run = function (paths, opts, cb) {
     }
   });
 
-  debug(' => dirsToBuild:', dirsToBuild);
-
   const filteredDirsToBuild = dirsToBuild.filter(function (d, index, arr) {
     return !sumanUtils.checkIfPathAlreadyExistsInList(arr, d, index);
   });
-
-  debug(' => filtered dirsToBuild:', filteredDirsToBuild);
 
   sumanUtils.buildDirsWithMkDirp(filteredDirsToBuild, function (err: Error) {  //make test-target dir in case it doesn't exist
 
@@ -187,17 +161,11 @@ export const $runTranspile: Run = function (paths, opts, cb) {
       return cb(err);
     }
 
-    debug(' => Root of project => ', projectRoot);
-    debug(' => "testTargetDir" => ', testTargetDir);
-
     // arbitrarily limit to 5 concurrent "babel processes".
     async.mapLimit(paths, 5, function (item: string, cb: Function): void {
 
       const fsItemTemp = sumanUtils.mapToTargetDir(item);
       const fsItem = fsItemTemp.targetPath;
-
-      debug(' => Item to be transpiled:', item);
-      debug(' => fsItem:', fsItem);
 
       fs.stat(item, function (err: Error, stats) {
 
@@ -273,7 +241,6 @@ export const $runTranspile: Run = function (paths, opts, cb) {
       cb(err);
 
     });
-
 
   });
 

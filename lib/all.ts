@@ -97,18 +97,11 @@ export const mapToTargetDir = function (item: string): MapToTargetDirResult {
   let splitted = temp.split(path.sep);
   splitted = splitted.filter(i => i); // get rid of pesky ['', first element
 
-  debug('splitted before shift:', splitted);
-
   while ((splitted.length + testTargetDirLength) > originalLength + 1) {
     splitted.shift();
   }
 
-  debug('splitted after shift:', splitted);
-
   const joined = splitted.join(path.sep);
-
-  debug('pre-resolved:', joined);
-  debug('joined:', joined);
 
   return {
     originalPath: item,
@@ -453,13 +446,13 @@ export const once = function (ctx: Object, fn: Function): Function {
   }
 };
 
-export const onceTO = function (ctx: Object, to: Timer, fn: Function): Function {
+export const onceTO = function (ctx: Object, fn: Function,  to: Timer): Function {
 
   let callable = true;
   return function callOnce(err: Error) {
     if (callable) {
-      clearTimeout(to);
       callable = false;
+      clearTimeout(to);
       return fn.apply(ctx, arguments);
     }
     else {
@@ -499,7 +492,7 @@ export const makePathExecutable = function (runPath: string, cb: Function) {
     process.nextTick(cb);
   }
   else {
-    fs.chmod(runPath, '777', cb);
+    fs.chmod(runPath, 0x777, cb);
   }
 };
 
@@ -528,6 +521,8 @@ export const arrayHasDuplicates = function (a: Array<any>): boolean {
 };
 
 export const findNearestRunAndTransform = function (root: string, pth: string, cb: Function) {
+
+  console.log('path => ', pth);
 
   try {
     const isDir = fs.statSync(pth).isDirectory();
@@ -571,6 +566,7 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
       },
 
       config: function (cb: Function) {
+        console.log('up path => ', upPath);
         let p = path.resolve(upPath + '/@config.json');
         fs.stat(p, function (err, stats) {
           let z = (stats && stats.isFile()) ? {config: p} : undefined;
@@ -590,8 +586,10 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
       return cb(err);
     }
 
+    console.log('find results => ', results);
 
     let ret: INearestRunAndTransformRet = results.reduce(function (prev, curr) {
+      console.log('curr => ', curr);
       return (curr ? Object.assign(prev, curr) : prev);
     }, {});
 
@@ -620,6 +618,7 @@ export interface IMapCallback {
 export const findSumanMarkers = function (types: Array<string>, root: string, files: Array<string>, cb: IMapCallback): void {
 
   //TODO: we can stop when we get to the end of all the files in files array
+
   const map: any = {};
 
   let addItem = function (item: string): void {
