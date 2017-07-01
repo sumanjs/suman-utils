@@ -120,7 +120,7 @@ export const findApplicablePathsGivenTransform = function (sumanConfig: Object, 
 
     fs.readdir(dir, function (err, items) {
 
-      if(firstPass === false){
+      if (firstPass === false) {
         for (let i = 0; i < items.length; i++) {
           if (String(items[i]).match(/@transform.sh/)) {
             return process.nextTick(cb);
@@ -446,7 +446,7 @@ export const once = function (ctx: Object, fn: Function): Function {
   }
 };
 
-export const onceTO = function (ctx: Object, fn: Function,  to: Timer): Function {
+export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function {
 
   let callable = true;
   return function callOnce(err: Error) {
@@ -488,11 +488,11 @@ export const onceAsync = function (ctx: Object, fn: Function): Function {
 
 export const makePathExecutable = function (runPath: string, cb: Function) {
 
-  if (!runPath) {
-    process.nextTick(cb);
+  if (runPath) {
+    fs.chmod(runPath, 0x777, cb);
   }
   else {
-    fs.chmod(runPath, 0x777, cb);
+    process.nextTick(cb);
   }
 };
 
@@ -520,13 +520,14 @@ export const arrayHasDuplicates = function (a: Array<any>): boolean {
   });
 };
 
+export const isStringWithPositiveLn = function(s: string){
+  return typeof s === 'string' && s.length > 0;
+};
+
 export const findNearestRunAndTransform = function (root: string, pth: string, cb: Function) {
 
-  console.log('path => ', pth);
-
   try {
-    const isDir = fs.statSync(pth).isDirectory();
-    if (!isDir) {
+    if (!fs.statSync(pth).isDirectory()) {
       pth = path.dirname(pth);
     }
   }
@@ -566,7 +567,6 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
       },
 
       config: function (cb: Function) {
-        console.log('up path => ', upPath);
         let p = path.resolve(upPath + '/@config.json');
         fs.stat(p, function (err, stats) {
           let z = (stats && stats.isFile()) ? {config: p} : undefined;
@@ -586,10 +586,7 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
       return cb(err);
     }
 
-    console.log('find results => ', results);
-
     let ret: INearestRunAndTransformRet = results.reduce(function (prev, curr) {
-      console.log('curr => ', curr);
       return (curr ? Object.assign(prev, curr) : prev);
     }, {});
 

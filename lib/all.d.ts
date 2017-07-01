@@ -48,6 +48,7 @@ export declare const onceAsync: (ctx: Object, fn: Function) => Function;
 export declare const makePathExecutable: (runPath: string, cb: Function) => void;
 export declare const checkForEquality: (arr1: string[], arr2: string[]) => boolean;
 export declare const arrayHasDuplicates: (a: any[]) => boolean;
+export declare const isStringWithPositiveLn: (s: string) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
 export interface IMapValue {
     [key: string]: boolean;
