@@ -464,12 +464,31 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
   }
 };
 
+export const newLine = '\n';
+
+export const xNewLines = function(count: number){
+  return new Array(count + 1).join('\n');  //yields 4 whitespace chars
+};
+
+export const isArrayOrFunction = function(o :any){
+  return Array.isArray(o) || typeof o === 'function';
+};
+
+export const decomposeError = function(err: any){
+  if(!err){
+    return new Error('error was null or undefined').stack;
+  }
+  if(typeof err.stack === 'string'){
+    return err.stack;
+  }
+  return typeof err === 'string' ? err : util.inspect(err);
+};
+
 export const onceAsync = function (ctx: Object, fn: Function): Function {
 
   let callable = true;
-
   return function callOnce(err: Error) {
-    const args = arguments;
+    const args = Array.from(arguments);
     if (callable) {
       callable = false;
       process.nextTick(function () {
@@ -486,10 +505,25 @@ export const onceAsync = function (ctx: Object, fn: Function): Function {
   }
 };
 
+export const customStringify = function (v: any) {
+  let cache: Array<any> = [];
+  return JSON.stringify(v, function (key, value) {
+    if (typeof value === 'object' && value !== null) {
+      if (cache.indexOf(value) !== -1) {
+        // Circular reference found, discard key
+        return;
+      }
+      // Store value in our collection
+      cache.push(value);
+    }
+    return value;
+  });
+};
+
 export const makePathExecutable = function (runPath: string, cb: Function) {
 
   if (runPath) {
-    fs.chmod(runPath, 0x777, cb);
+    fs.chmod(runPath, 0o777, cb);
   }
   else {
     process.nextTick(cb);
@@ -691,16 +725,6 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
 
 };
 
-export const makeResultsDir = function (bool: boolean, cb: Function): void {
-  if (!bool) {
-    process.nextTick(cb);
-  }
-  else {
-    process.nextTick(function () {
-      cb(null);
-    });
-  }
-};
 
 export const isObject = function (v: any) {
   return v && typeof v === 'object' && !Array.isArray(v);

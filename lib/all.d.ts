@@ -44,7 +44,12 @@ export declare const findProjectRoot: (p: string) => string;
 export declare const findProjRoot: (p: string) => string;
 export declare const once: (ctx: Object, fn: Function) => Function;
 export declare const onceTO: (ctx: Object, fn: Function, to: Timer) => Function;
+export declare const newLine = "\n";
+export declare const xNewLines: (count: number) => string;
+export declare const isArrayOrFunction: (o: any) => boolean;
+export declare const decomposeError: (err: any) => any;
 export declare const onceAsync: (ctx: Object, fn: Function) => Function;
+export declare const customStringify: (v: any) => string;
 export declare const makePathExecutable: (runPath: string, cb: Function) => void;
 export declare const checkForEquality: (arr1: string[], arr2: string[]) => boolean;
 export declare const arrayHasDuplicates: (a: any[]) => boolean;
@@ -64,7 +69,6 @@ export interface IMapCallback {
     (err: Error | null, map?: IMap): void;
 }
 export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: IMapCallback) => void;
-export declare const makeResultsDir: (bool: boolean, cb: Function) => void;
 export declare const isObject: (v: any) => boolean;
 declare let $exports: any;
 export default $exports;
