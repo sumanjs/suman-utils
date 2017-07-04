@@ -634,6 +634,7 @@ export interface IMapValue {
   [key: string]: boolean,
   '@transform.sh?': boolean,
   '@run.sh?': boolean,
+  '@config.json?': boolean,
   '@target?': boolean,
   '@src?': boolean
 }
