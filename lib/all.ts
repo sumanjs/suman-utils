@@ -176,8 +176,10 @@ export const isSumanSingleProcess = function (): boolean {
   return process.env.SUMAN_SINGLE_PROCESS === 'yes';
 };
 
-export const isSumanDebug = function (): boolean {
-  return process.env.SUMAN_DEBUG === 'yes';
+export const isSumanDebug = function (cb?: Function): boolean {
+  let isDebug = process.env.SUMAN_DEBUG === 'yes';
+  isDebug && cb && cb();
+  return isDebug;
 };
 
 export const runAssertionToCheckForSerialization = function (val: Object): void {
@@ -333,11 +335,16 @@ export const findSharedPath = function (p1: string, p2: string): string {
   return path.resolve(path.sep + shared.join(path.sep));
 };
 
+export const removeProjectRootFromPath = function (p: string) {
+  const projectRootLn = _suman.projectRoot.length;
+  return p.slice(projectRootLn);
+};
+
 export const removeSharedRootPath = function (paths: Array<string>): Array<Array<string>> {
 
   if (paths.length < 2) {   //  paths = ['just/a/single/path/so/letsreturnit']
     return paths.map(function (p) {
-      return [p, path.basename(p)];
+      return [p, path.basename(p), removeProjectRootFromPath(p)];
     });
   }
 
@@ -372,7 +379,11 @@ export const removeSharedRootPath = function (paths: Array<string>): Array<Array
 
   return paths.map(function (p) {
     const basenameLngth = path.basename(p).length;
-    return [p, p.substring(Math.min(shared.length, (p.length - basenameLngth)), p.length)];
+    return [
+      p,
+      p.substring(Math.min(shared.length, (p.length - basenameLngth)), p.length),
+      removeProjectRootFromPath(p)
+    ];
   });
 
 };
@@ -467,19 +478,19 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
 
 export const newLine = '\n';
 
-export const xNewLines = function(count: number){
+export const xNewLines = function (count: number) {
   return new Array(count + 1).join('\n');  //yields 4 whitespace chars
 };
 
-export const isArrayOrFunction = function(o :any){
+export const isArrayOrFunction = function (o: any) {
   return Array.isArray(o) || typeof o === 'function';
 };
 
-export const decomposeError = function(err: any){
-  if(!err){
+export const decomposeError = function (err: any) {
+  if (!err) {
     return new Error('error was null or undefined').stack;
   }
-  if(typeof err.stack === 'string'){
+  if (typeof err.stack === 'string') {
     return err.stack;
   }
   return typeof err === 'string' ? err : util.inspect(err);
@@ -555,7 +566,7 @@ export const arrayHasDuplicates = function (a: Array<any>): boolean {
   });
 };
 
-export const isStringWithPositiveLn = function(s: string){
+export const isStringWithPositiveLn = function (s: string) {
   return typeof s === 'string' && s.length > 0;
 };
 
@@ -652,6 +663,8 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
 
   //TODO: we can stop when we get to the end of all the files in files array
 
+  const sumanHelpersDirRegex = new RegExp(_suman.sumanHelperDirRoot);
+
   const map: any = {};
 
   let addItem = function (item: string): void {
@@ -668,11 +681,14 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
 
   (function getMarkers(dir: string, cb: Function) {
 
+    if (sumanHelpersDirRegex.test(dir)) {
+      return process.nextTick(cb);
+    }
+
     fs.readdir(dir, function (err, items) {
 
       if (err) {
-        console.log(' => [suman internal] => probably a symlink => ', dir);
-        console.error(err.stack || err);
+        console.error(' => [suman internal] => possibly a symlink => ', dir, '\n');
         return cb(err);
       }
 
@@ -682,11 +698,14 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
 
       async.eachLimit(items, 5, function (item: string, cb: Function) {
 
+        if (sumanHelpersDirRegex.test(item)) {
+          return process.nextTick(cb);
+        }
+
         fs.stat(item, function (err, stats) {
 
           if (err) {
-            console.log(' => [suman internal] => probably a symlink => ', item);
-            console.error(err.stack || err);
+            console.error(' => [suman internal] => possibly a symlink => ', item, '\n');
             return cb();
           }
 
@@ -726,7 +745,6 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
   });
 
 };
-
 
 export const isObject = function (v: any) {
   return v && typeof v === 'object' && !Array.isArray(v);
