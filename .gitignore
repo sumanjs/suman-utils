@@ -1,7 +1,4 @@
 .idea
-
 node_modules
-
-*suman/logs/
-
-test/target/
+*.log
+.DS_Store

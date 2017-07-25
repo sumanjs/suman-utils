@@ -5,9 +5,9 @@ suman.conf.js
 .idea
 *.sh
 *.ts
+*.json
 *.txt
 *.log
-tsconfig*.json
 *.md
 *.yml
 !*.d.ts
