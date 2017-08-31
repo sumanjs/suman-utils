@@ -407,7 +407,7 @@ export const isGeneratorFn = function (fn: Function): boolean {
   }
   let fnStr = toStr.call(fn);
   return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
-  || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
+    || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
 
 };
 
@@ -494,6 +494,32 @@ export const decomposeError = function (err: any) {
     return err.stack;
   }
   return typeof err === 'string' ? err : util.inspect(err);
+};
+
+export const repeatCharXTimes = function(char: string, num: number){
+  if(String(char).length < 1 ){
+    throw new Error('string must be at least 1 character in length.');
+  }
+  return new Array(num).join(char);
+};
+
+export const createCleanStack = function (str: String, $ignore?: Array<string | RegExp>) {
+
+  const ignore = ($ignore || [/node_modules/, /next_tick.js/, /sumanjs/]).map(function (r) {
+    return r instanceof RegExp ? r : new RegExp(r);
+  });
+
+  return String(str).split('\n').filter(function (s) {
+
+    if (/\/sumanjs\/test\//.test(s)) {
+      return true;
+    }
+
+    return !ignore.some(function (ig) {
+      return ig.test(s);
+    })
+  });
+
 };
 
 export const onceAsync = function (ctx: Object, fn: Function): Function {
@@ -644,6 +670,7 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
 
 export interface IMapValue {
   [key: string]: boolean,
+
   '@transform.sh?': boolean,
   '@run.sh?': boolean,
   '@config.json?': boolean,
