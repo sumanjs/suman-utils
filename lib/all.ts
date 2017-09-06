@@ -478,6 +478,21 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
 
 export const newLine = '\n';
 
+export const getCleanErrorString = function (e: any): string {
+  if (!e) {
+    return String(new Error('falsy value passed to error string getter').stack);
+  }
+  else if (typeof (e.stack || e) === 'string') {
+    return e.stack || e;
+  }
+  else {
+    return util.inspect(e.stack || e);
+  }
+};
+
+// create simple alias
+export const getCleanErrStr = getCleanErrorString;
+
 export const xNewLines = function (count: number) {
   return new Array(count + 1).join('\n');  //yields 4 whitespace chars
 };
@@ -496,8 +511,8 @@ export const decomposeError = function (err: any) {
   return typeof err === 'string' ? err : util.inspect(err);
 };
 
-export const repeatCharXTimes = function(char: string, num: number){
-  if(String(char).length < 1 ){
+export const repeatCharXTimes = function (char: string, num: number) {
+  if (String(char).length < 1) {
     throw new Error('string must be at least 1 character in length.');
   }
   return new Array(num).join(char);
