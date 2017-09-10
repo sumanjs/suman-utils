@@ -13,7 +13,7 @@ module.exports = Object.freeze({
   // Array<regex>
   matchAny: [],                              //recommended regex for "matchAny" => [/\.test\.js$/],
   matchNone: [/fixture/, /.*target/],        //recommended regex for "matchNone" => [/fixture/],
-  matchAll: [/\.test\.js$/],                 //recommended regex for "matchAll" => [],
+  matchAll: [/\.js$/],                 //recommended regex for "matchAll" => [],
 
   // Object: child process logging
   childProcessLogs: [0,1,2],

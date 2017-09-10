@@ -5,7 +5,9 @@ cd $(dirname "$0")
 SUMAN=$(which suman);
 
 if [[ -z ${SUMAN} ]]; then
-npm install -g suman
+    npm install -g suman
 fi
 
-suman test
+npm link suman
+
+suman test/src/all.test.js

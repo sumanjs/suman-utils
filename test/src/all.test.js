@@ -4,7 +4,7 @@ const suman = require('suman');
 const Test = suman.init(module);
 
 
-Test.create(function (assert, sumanUtils, it, stream, Rx) {
+Test.create(function (assert, su, it, stream, Rx) {
 
   const {
 
@@ -39,7 +39,8 @@ Test.create(function (assert, sumanUtils, it, stream, Rx) {
     arrayHasDuplicates,
     makeResultsDir
 
-  } = sumanUtils;
+  } = su;
+
 
   it(isStream.name, t => {
 
