@@ -7,23 +7,23 @@
 // which is actually pretty cool
 // ******************************************************************************************************************
 
-
 const http = require('http');
-
 
 module.exports = data => {  //load async deps for any of your suman tests
 
-    return {
+  return {
 
-      sumanUtils: function(){
-          return require('suman-utils');
+    dependencies: {
+
+      su: function () {
+        return require('suman-utils');
       },
 
-      Rx: function(){
+      Rx: function () {
         return require('rxjs');
       }
-
     }
 
+  }
 
 };
