@@ -469,9 +469,7 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
     }
     else {
       _suman.logWarning('suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
-      if (err) {
-        _suman.logError('warning => ', err.stack || util.inspect(err));
-      }
+      err && _suman.logError('warning => ', err.stack || util.inspect(err));
     }
   }
 };
