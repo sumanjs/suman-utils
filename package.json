@@ -2,9 +2,9 @@
   "name": "suman-utils",
   "version": "0.0.73117",
   "description": "Shared module within the Suman test runner ecosystem",
-  "main": "lib/all.js",
-  "typings": "lib/all.d.ts",
-  "types": "lib/all.d.ts",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "./@test.sh"
   },

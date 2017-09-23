@@ -1,6 +1,9 @@
 'use strict';
 
-import {$runTranspile, Run} from './run-transpile';
+//dts
+import {Run, MapToTargetDirResult,
+  INearestRunAndTransformRet, IMapCallback} from "suman-types/dts/suman-utils";
+import {IGlobalSumanObj} from "suman-types/dts/global";
 
 //polyfills
 const process = require('suman-browser-polyfills/modules/process');
@@ -9,7 +12,6 @@ const global = require('suman-browser-polyfills/modules/global');
 process.on('warning', function (w: any) {
   console.error('\n', ' => Suman warning => ', (w.stack || w), '\n');
 });
-
 
 //core
 import * as fs from 'fs';
@@ -20,11 +22,12 @@ import * as assert from 'assert';
 //npm
 const async = require('async');
 const residence = require('residence');
-const debug = require('suman-debug')('s:utils');
 const mkdirp = require('mkdirp');
 
 //project
-const _suman = global.__suman = (global.__suman || {});
+const _suman: IGlobalSumanObj = global.__suman = (global.__suman || {});
+
+
 const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
@@ -34,26 +37,12 @@ import Timer = NodeJS.Timer;
 
 /////////////////////////////////////////////////////////////////////////////
 
-export interface MapToTargetDirResult {
-  originalPath: string,
-  targetPath: string
-}
-
-export interface INearestRunAndTransformRet {
-  run: string,
-  transform: string
-  config: string
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-
 let globalProjectRoot: string;
 
 export const weAreDebugging = allDebug.weAreDebugging;
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
-export const runTranspile: Run = $runTranspile;
 
 export const vgt = function (val: number): boolean {
   return _suman.sumanOpts && _suman.sumanOpts.verbosity > val;
@@ -203,9 +192,6 @@ export const getArrayOfDirsToBuild = function (testTargetPath: string, p: string
   let temp: string;
   const l = path.normalize('/' + testTargetPath).split('/').length;
   const items = path.normalize('/' + p).split('/');
-
-  debug(' => length of testTargetPath:', l);
-  debug(' => items length:', items.length);
 
   if (fs.statSync(p).isFile()) {
     items.pop(); // always get rid of the first file
@@ -478,7 +464,7 @@ export const newLine = '\n';
 
 export const getCleanErrorString = function (e: any): string {
   if (!e) {
-    return String(new Error('falsy value passed to error string getter').stack);
+    return String(new Error('falsy value passed to error string extractor.').stack);
   }
   else if (typeof (e.stack || e) === 'string') {
     return e.stack || e;
@@ -680,24 +666,6 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
   });
 
 };
-
-export interface IMapValue {
-  [key: string]: boolean,
-
-  '@transform.sh?': boolean,
-  '@run.sh?': boolean,
-  '@config.json?': boolean,
-  '@target?': boolean,
-  '@src?': boolean
-}
-
-export interface IMap {
-  [key: string]: IMapValue
-}
-
-export interface IMapCallback {
-  (err: Error | null, map?: IMap): void
-}
 
 export const findSumanMarkers = function (types: Array<string>, root: string, files: Array<string>, cb: IMapCallback): void {
 

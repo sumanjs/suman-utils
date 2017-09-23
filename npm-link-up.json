@@ -10,6 +10,7 @@
   "list": [
     "residence",
     "suman-debug",
-    "suman-browser-polyfills"
+    "suman-browser-polyfills",
+    "suman-types"
   ]
 }
