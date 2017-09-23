@@ -1,20 +1,10 @@
 /// <reference types="node" />
-import { Run } from './run-transpile';
+import { MapToTargetDirResult, IMapCallback } from "suman-types/dts/suman-utils";
 import Timer = NodeJS.Timer;
-export interface MapToTargetDirResult {
-    originalPath: string;
-    targetPath: string;
-}
-export interface INearestRunAndTransformRet {
-    run: string;
-    transform: string;
-    config: string;
-}
 export declare const weAreDebugging: any;
 export declare const isStream: any;
 export declare const isObservable: any;
 export declare const isSubscriber: any;
-export declare const runTranspile: Run;
 export declare const vgt: (val: number) => boolean;
 export declare const vlt: (val: number) => boolean;
 export declare const checkStatsIsFile: (item: string) => boolean | null;
@@ -60,20 +50,6 @@ export declare const checkForEquality: (arr1: string[], arr2: string[]) => boole
 export declare const arrayHasDuplicates: (a: any[]) => boolean;
 export declare const isStringWithPositiveLn: (s: string) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
-export interface IMapValue {
-    [key: string]: boolean;
-    '@transform.sh?': boolean;
-    '@run.sh?': boolean;
-    '@config.json?': boolean;
-    '@target?': boolean;
-    '@src?': boolean;
-}
-export interface IMap {
-    [key: string]: IMapValue;
-}
-export interface IMapCallback {
-    (err: Error | null, map?: IMap): void;
-}
 export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: IMapCallback) => void;
 export declare const isObject: (v: any) => boolean;
 declare let $exports: any;

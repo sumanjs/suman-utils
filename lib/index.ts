@@ -1,8 +1,7 @@
 'use strict';
 
 //dts
-import {Run, MapToTargetDirResult,
-  INearestRunAndTransformRet, IMapCallback} from "suman-types/dts/suman-utils";
+import {MapToTargetDirResult, INearestRunAndTransformRet, IMapCallback} from "suman-types/dts/suman-utils";
 import {IGlobalSumanObj} from "suman-types/dts/global";
 
 //polyfills
@@ -26,8 +25,6 @@ const mkdirp = require('mkdirp');
 
 //project
 const _suman: IGlobalSumanObj = global.__suman = (global.__suman || {});
-
-
 const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
@@ -744,12 +741,7 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
     });
 
   })(root, function (err: Error) {
-    if (err) {
-      cb(err);
-    }
-    else {
-      cb(null, map);
-    }
+    err ? cb(err) : cb(null, map);
   });
 
 };
