@@ -40,6 +40,8 @@ export const weAreDebugging = allDebug.weAreDebugging;
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
+export const noop = function(){};
+export const newLine = '\n';
 
 export const vgt = function (val: number): boolean {
   return _suman.sumanOpts && _suman.sumanOpts.verbosity > val;
@@ -457,7 +459,7 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
   }
 };
 
-export const newLine = '\n';
+
 
 export const getCleanErrorString = function (e: any): string {
   if (!e) {
@@ -667,9 +669,7 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
 export const findSumanMarkers = function (types: Array<string>, root: string, files: Array<string>, cb: IMapCallback): void {
 
   //TODO: we can stop when we get to the end of all the files in files array
-
   const sumanHelpersDirRegex = new RegExp(_suman.sumanHelperDirRoot);
-
   const map: any = {};
 
   let addItem = function (item: string): void {
