@@ -1,4 +1,11 @@
+
+### folders
 .idea
 node_modules
+
+### matching files
 *.log
-.DS_Store
+*.DS_Store
+
+### files
+
