@@ -2,13 +2,9 @@
   "compilerOptions": {
     "declaration": true,
     "baseUrl": ".",
-    "paths": {
-    },
-    "types": [
-      "node"
-    ],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "node_modules/suman-types/dts"
     ],
     "target": "es5",
     "module": "commonjs",
@@ -30,9 +26,6 @@
     "noFallthroughCasesInSwitch": true
   },
   "compileOnSave": false,
-  "include": [
-    "./**/*.ts"
-  ],
   "exclude": [
     "test",
     "node_modules"
