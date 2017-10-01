@@ -1,1 +1,0 @@
-The purpose of docs dir is TBD

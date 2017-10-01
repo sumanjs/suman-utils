@@ -8,7 +8,7 @@ if [[ "$BRANCH" == "master" && "$1" != "-f" ]]; then
 fi
 
 ###########################################
-# CM = "commit message"...default is "set"
+# CM === "commit message"...default is "set"
 ###########################################
 
 CM=${1:-set}

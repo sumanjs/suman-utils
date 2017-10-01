@@ -20,9 +20,6 @@
       "es2017"
     ]
   },
-  "include": [
-    "./test/**/*.ts"
-  ],
   "exclude": [
     "node_modules"
   ]
