@@ -25,12 +25,12 @@
   "homepage": "https://github.com/ORESoftware/suman-utils#readme",
   "dependencies": {
     "async": "^2.1.5",
-    "colors": "^1.1.2",
+    "chalk": "^2.1.0",
     "mkdirp": "^0.5.1",
     "residence": "latest",
     "rimraf": "^2.6.0",
-    "suman-debug": "latest",
-    "suman-browser-polyfills": "latest"
+    "suman-browser-polyfills": "latest",
+    "suman-debug": "latest"
   },
   "devDependencies": {
     "@types/async": "^2.0.38",
