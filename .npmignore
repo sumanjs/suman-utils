@@ -9,6 +9,7 @@ suman.conf.js
 .npmignore
 .gitignore
 .editorconfig
+package-lock.json
 
 ### matching files
 *.sh
