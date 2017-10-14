@@ -9,6 +9,7 @@ suman.conf.js
 .npmignore
 .gitignore
 .editorconfig
+LICENSE.md
 
 ### matching files
 *.sh

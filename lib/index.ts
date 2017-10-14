@@ -19,7 +19,7 @@ import * as util from 'util';
 import * as assert from 'assert';
 
 //npm
-const async = require('async');
+import async = require('async');
 const residence = require('residence');
 const mkdirp = require('mkdirp');
 
@@ -180,9 +180,7 @@ export const runAssertionToCheckForSerialization = function (val: Object): void 
 };
 
 export const buildDirsWithMkDirp = function (paths: Array<string>, cb: Function): void {
-  async.each(paths, function (p: string, cb: Function) {
-    mkdirp(p, cb);
-  }, cb);
+  async.each(paths, mkdirp, cb);
 };
 
 export const getArrayOfDirsToBuild = function (testTargetPath: string, p: string): string | undefined {
