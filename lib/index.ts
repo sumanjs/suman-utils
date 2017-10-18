@@ -17,6 +17,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 import * as assert from 'assert';
+import * as events from 'events';
 
 //npm
 import async = require('async');
@@ -30,6 +31,7 @@ const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
 import allDebug from './we-are-debugging'
+const EventEmitter = events.EventEmitter;
 import Timer = NodeJS.Timer;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,6 +44,12 @@ export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
 export const noop = function(){};
 export const newLine = '\n';
+
+export const isEventEmitter = function(val: any){
+   return val && ((val instanceof EventEmitter) ||
+     (typeof val.once === 'function' && typeof val.on === 'function'
+       && typeof val.removeListener === 'function' && typeof val.removeAllListeners === 'function'));
+};
 
 export const vgt = function (val: number): boolean {
   return _suman.sumanOpts && _suman.sumanOpts.verbosity > val;

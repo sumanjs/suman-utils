@@ -7,6 +7,7 @@ export declare const isObservable: any;
 export declare const isSubscriber: any;
 export declare const noop: () => void;
 export declare const newLine = "\n";
+export declare const isEventEmitter: (val: any) => boolean;
 export declare const vgt: (val: number) => boolean;
 export declare const vlt: (val: number) => boolean;
 export declare const checkStatsIsFile: (item: string) => boolean | null;
