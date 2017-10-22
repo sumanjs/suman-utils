@@ -23,15 +23,21 @@ const IS_SUMAN_DEBUG = process.env.SUMAN_DEBUG === 'yes';
 const inDebugMode = typeof global.v8debug === 'object';
 
 const expressions = [
-  '--debug',
-  'debug',
-  '--inspect',
-  '--debug=5858',
-  '--debug-brk=5858'
+  /^--debug$/,
+  /^debug$/,
+  /^--inspect$/,
+  /^--inspect-brk$/,
+  /^--inspect-brk=[0-9]{1,5}$/,
+  /^--debug=[0-9]{1,5}$/,
+  /^--debug-brk=[0-9]{1,5}$/
 ];
 
 // at least one of these conditions is true
-const isDebug = expressions.some(x => execArgs.indexOf(x) > -1);
+const isDebug = expressions.some(function(exp){
+   return execArgs.some(function(x: string){
+     return exp.test(x);
+   });
+});
 
 if (IS_SUMAN_DEBUG) {
   console.log('=> Exec args => ', util.inspect(execArgs), '\n');
@@ -46,6 +52,3 @@ if (inDebugMode) {
 }
 
 export const weAreDebugging = _suman.weAreDebugging = (isDebug || inDebugMode);
-
-const $exports = module.exports;
-export default $exports;
