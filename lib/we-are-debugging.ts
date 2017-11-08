@@ -13,7 +13,7 @@ const util = require('util');
 //project
 const _suman : IGlobalSumanObj = global.__suman = (global.__suman || {});
 
-///////////////////////////////////////
+//////////////////////////////////////////////////////////
 
 const execArgs = process.execArgv.slice(0);  //copy it
 
