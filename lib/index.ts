@@ -23,6 +23,7 @@ import * as events from 'events';
 import async = require('async');
 const residence = require('residence');
 const mkdirp = require('mkdirp');
+import chalk = require('chalk');
 
 //project
 const _suman: IGlobalSumanObj = global.__suman = (global.__suman || {});
@@ -35,6 +36,15 @@ export {constants} from './constants'
 const EventEmitter = events.EventEmitter;
 import Timer = NodeJS.Timer;
 
+const name = ' [suman-utils] ';
+const log = {
+  info: console.log.bind(console, chalk.gray.bold(name)),
+  warning: console.error.bind(console, chalk.yellow(name)),
+  error: console.error.bind(console, chalk.red(name)),
+  good: console.log.bind(console, chalk.cyan(name)),
+  veryGood: console.log.bind(console, chalk.green(name))
+};
+
 /////////////////////////////////////////////////////////////////////////////
 
 let globalProjectRoot: string;
@@ -42,13 +52,14 @@ let globalProjectRoot: string;
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
-export const noop = function(){};
+export const noop = function () {
+};
 export const newLine = '\n';
 
-export const isEventEmitter = function(val: any){
-   return val && ((val instanceof EventEmitter) ||
-     (typeof val.once === 'function' && typeof val.on === 'function'
-       && typeof val.removeListener === 'function' && typeof val.removeAllListeners === 'function'));
+export const isEventEmitter = function (val: any) {
+  return val && ((val instanceof EventEmitter) ||
+    (typeof val.once === 'function' && typeof val.on === 'function'
+      && typeof val.removeListener === 'function' && typeof val.removeAllListeners === 'function'));
 };
 
 export const vgt = function (val: number): boolean {
@@ -66,7 +77,7 @@ export const checkStatsIsFile = function (item: string) {
   }
   catch (err) {
     if (vgt(2)) {
-      console.error(' => Suman verbose warning => ', err.stack);
+      log.error('warning:', err.stack);
     }
     return null;
   }
@@ -135,7 +146,7 @@ export const findApplicablePathsGivenTransform = function (sumanConfig: Object, 
         fs.stat(fullPath, function (err, stats) {
 
           if (err) {
-            console.error(err.stack);
+            log.error(err.stack);
             return cb();
           }
 
@@ -207,9 +218,9 @@ export const getArrayOfDirsToBuild = function (testTargetPath: string, p: string
   }
   else {
     console.log('\n');
-    console.error(' => Suman-Utils warning => path to file was not longer than path to test-target dir.');
-    console.error(' => Suman-Utils warning => path to file =>', p);
-    console.error(' => Suman-Utils warning => testTargetDir =>', testTargetPath);
+    log.error('warning: path to file was not longer than path to test-target dir.');
+    log.error('warning: path to file =>', p);
+    log.error('warning: testTargetDir =>', testTargetPath);
     console.log('\n');
   }
 
@@ -249,7 +260,7 @@ export const buildDirs = function (dirs: Array<string>, cb: Function): void {
 
     fs.mkdir(item, function (err: Error) {
       if (err && !String(err.stack).match(/eexist/i)) {
-        console.error(err.stack || err);
+        log.error(err.stack || err);
         cb(err);
       }
       else {
@@ -465,8 +476,6 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
   }
 };
 
-
-
 export const getCleanErrorString = function (e: any): string {
   if (!e) {
     return String(new Error('falsy value passed to error string extractor.').stack);
@@ -538,9 +547,9 @@ export const onceAsync = function (ctx: Object, fn: Function): Function {
       });
     }
     else {
-      console.log(' => Suman warning => function was called more than once -' + fn ? fn.toString() : '');
+      log.warning('warning: function was called more than once -' + fn ? fn.toString() : '');
       if (err) {
-        console.error(' => Suman warning => \n', err.stack || util.inspect(err));
+        log.error('warning: ', err.stack || util.inspect(err));
       }
     }
 
@@ -699,8 +708,9 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
     fs.readdir(dir, function (err, items) {
 
       if (err) {
-        console.error(' => [suman internal] => possibly a symlink => ', dir, '\n');
-        return cb(err);
+        log.warning('warning: fs error while creating suman markers map.');
+        log.warning('warning: ' + err.message);
+        return cb(null);
       }
 
       items = items.map(function (item) {
@@ -716,13 +726,14 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
         fs.stat(item, function (err, stats) {
 
           if (err) {
-            console.error(' => [suman internal] => possibly a symlink => ', item, '\n');
-            return cb();
+            log.warning('warning: fs error while creating suman markers map.');
+            log.warning('warning:' + err.message);
+            return cb(null);
           }
 
           if (stats.isFile()) {
             addItem(item);
-            cb();
+            cb(null);
           }
           else if (stats.isDirectory()) {
             //TODO: stop here if this item is deeper than any of the files passed in
@@ -731,13 +742,15 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
               getMarkers(item, cb);
             }
             else {
-              console.log(' => Warning => node_modules/.git path ignored => ', item);
-              cb();
+              log.warning(`warning: node_modules/.git path ignored => "${item}".`);
+              cb(null);
             }
           }
           else {
-            console.log(' => Not directory or file => ', item);
-            cb();
+            log.warning('warning: fs error while creating suman markers map.');
+            log.warning(`warning: not directory or file => "${item}".`);
+            log.warning(`warning: possibly a symlink (symlinks not yet supported) => "${item}".`);
+            cb(null);
           }
 
         });
