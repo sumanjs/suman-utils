@@ -30,7 +30,8 @@ const isX = require('./is-x');
 const toStr = Object.prototype.toString;
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
-import {weAreDebugging} from './we-are-debugging'
+export {weAreDebugging} from './we-are-debugging'
+export {constants} from './constants'
 const EventEmitter = events.EventEmitter;
 import Timer = NodeJS.Timer;
 
@@ -38,7 +39,6 @@ import Timer = NodeJS.Timer;
 
 let globalProjectRoot: string;
 
-export const weAreDebugging = weAreDebugging;
 export const isStream = isX.isStream;
 export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;

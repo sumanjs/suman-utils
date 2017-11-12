@@ -1,7 +1,8 @@
 /// <reference types="node" />
 import { MapToTargetDirResult, IMapCallback } from "suman-types/dts/suman-utils";
+export { weAreDebugging } from './we-are-debugging';
+export { constants } from './constants';
 import Timer = NodeJS.Timer;
-export declare const weAreDebugging: any;
 export declare const isStream: any;
 export declare const isObservable: any;
 export declare const isSubscriber: any;
