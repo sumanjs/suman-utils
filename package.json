@@ -39,9 +39,9 @@
     "url": "git+https://github.com/sumanjs/suman-utils.git"
   },
   "scripts": {
-    "test": "./@test.sh"
+    "test": "./scripts/test.sh"
   },
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
-  "version": "0.0.73121"
+  "version": "0.0.73122"
 }
