@@ -599,34 +599,34 @@ export const makePathExecutable = function (runPath: string, cb: Function) {
   }
 };
 
-export const getEnvObjFromStr2 = function (str: string): Object {
-  
-  const ret = {} as any;
-  
-  String(str).split(/\s+/g).forEach(function (s) {
-    const kv = String(s).split('=');
-    if (kv.length > 2) {
-      throw new Error('String representing env variables is malformed => ' + str);
-    }
-    
-    const key = String(kv[0]).trim();
-    const val = String(kv[1]).trim();
-    
-    if (key in ret) {
-      throw new Error('Environment variable was set more than once => ' + str);
-    }
-    
-    ret[key] = val;
-    
-  });
-  
-  return ret;
-  
-};
-
-export const getEnvObjFromStr = function (str: string): Object {
-  return qs.parse(String(str), ' ', '=');
-};
+// export const getEnvObjFromStr2 = function (str: string): Object {
+//
+//   const ret = {} as any;
+//
+//   String(str).split(/\s+/g).forEach(function (s) {
+//     const kv = String(s).split('=');
+//     if (kv.length > 2) {
+//       throw new Error('String representing env variables is malformed => ' + str);
+//     }
+//
+//     const key = String(kv[0]).trim();
+//     const val = String(kv[1]).trim();
+//
+//     if (key in ret) {
+//       throw new Error('Environment variable was set more than once => ' + str);
+//     }
+//
+//     ret[key] = val;
+//
+//   });
+//
+//   return ret;
+//
+// };
+//
+// export const getEnvObjFromStr = function (str: string): Object {
+//   return qs.parse(String(str), ' ', '=');
+// };
 
 export const checkForEquality = function (arr1: Array<string>, arr2: Array<string>): boolean {
   
