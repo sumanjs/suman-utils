@@ -1,5 +1,4 @@
 /// <reference types="node" />
-import { MapToTargetDirResult, IMapCallback } from "suman-types/dts/suman-utils";
 export { weAreDebugging } from './we-are-debugging';
 export { constants } from './constants';
 import Timer = NodeJS.Timer;
@@ -12,7 +11,7 @@ export declare const isEventEmitter: (val: any) => boolean;
 export declare const vgt: (val: number) => boolean;
 export declare const vlt: (val: number) => boolean;
 export declare const checkStatsIsFile: (item: string) => boolean | null;
-export declare const mapToTargetDir: (item: string) => MapToTargetDirResult;
+export declare const mapToTargetDir: (item: string) => any;
 export declare const findApplicablePathsGivenTransform: (sumanConfig: Object, transformPath: string, cb: Function) => void;
 export declare const isSumanSingleProcess: () => boolean;
 export declare const isSumanDebug: (cb?: Function | undefined) => boolean;
@@ -38,6 +37,7 @@ export declare const getHomeDir: () => string;
 export declare const findProjectRoot: (p: string) => string;
 export declare const findProjRoot: (p: string) => string;
 export declare const once: (ctx: Object, fn: Function) => Function;
+export declare const onceWithCache: (fn: Function) => (cb: Function) => void;
 export declare const onceTO: (ctx: Object, fn: Function, to: Timer) => Function;
 export declare const getCleanErrorString: (e: any) => string;
 export declare const getCleanErrStr: (e: any) => string;
@@ -53,7 +53,7 @@ export declare const checkForEquality: (arr1: string[], arr2: string[]) => boole
 export declare const arrayHasDuplicates: (a: any[]) => boolean;
 export declare const isStringWithPositiveLn: (s: string) => boolean;
 export declare const findNearestRunAndTransform: (root: string, pth: string, cb: Function) => any;
-export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: IMapCallback) => void;
+export declare const findSumanMarkers: (types: string[], root: string, files: string[], cb: any) => void;
 export declare const isObject: (v: any) => boolean;
 declare let $exports: any;
 export default $exports;
