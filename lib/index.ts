@@ -536,7 +536,7 @@ export const repeatCharXTimes = function (char: string, num: number) {
 
 export const createCleanStack = function (str: String, $ignore?: Array<string | RegExp>) {
   
-  const ignore = ($ignore || [/node_modules/, /next_tick.js/, /sumanjs/]).map(function (r) {
+  const ignore = ($ignore || [/node_modules/, /next_tick.js/]).map(function (r) {
     return r instanceof RegExp ? r : new RegExp(r);
   });
   
