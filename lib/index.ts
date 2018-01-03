@@ -494,6 +494,45 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
   }
 };
 
+export const getFunctionArgumentNames = function (fn: Function | string) {
+  
+  let isString = false;
+  
+  if (typeof fn === 'function') {
+    if (fn.length === 0) {
+      return []
+    }
+  }
+  else if (typeof fn !== 'string') {
+    throw new Error('Argument must be either a string or function.');
+  }
+  else {
+    isString = true;
+  }
+  
+  // from https://github.com/jrburke/requirejs
+  let reComments = /(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg;
+  
+  let toString = Function.prototype.toString;
+  let fnStr = isString ? fn : toString.call(fn);
+  
+  fnStr = fnStr.replace(reComments, '') || fnStr;
+  fnStr = fnStr.slice(0, fnStr.indexOf('{'));
+  
+  let open = fnStr.indexOf('(');
+  let close = fnStr.indexOf(')');
+  
+  open = open >= 0 ? open + 1 : 0;
+  close = close > 0 ? close : fnStr.indexOf('=');
+  
+  fnStr = fnStr.slice(open, close);
+  fnStr = '(' + fnStr + ')';
+  
+  let match = fnStr.match(/\(([\s\S]*)\)/);
+  return match ? match[1].split(',').map((param: string) => String(param).trim()) : []
+  
+};
+
 export const getCleanErrorString = function (e: any): string {
   if (!e) {
     return String(new Error('falsy value passed to error string extractor.').stack);
