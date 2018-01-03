@@ -494,7 +494,9 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
   }
 };
 
-export const getFunctionArgumentNames = function (fn: Function | string) {
+export const getArgumentNames = function (fn: Function | string) {
+  
+  // this code was borrowed from require('function-arguments') NPM package
   
   let isString = false;
   
