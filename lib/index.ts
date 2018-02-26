@@ -18,13 +18,12 @@ import * as path from 'path';
 import util = require('util');
 import assert = require('assert');
 import events = require('events');
-import qs = require('querystring');
 
 //npm
 import async = require('async');
 const residence = require('residence');
 const mkdirp = require('mkdirp');
-import chalk = require('chalk');
+import chalk from 'chalk';
 
 //project
 const _suman: IGlobalSumanObj = global.__suman = (global.__suman || {});
@@ -36,6 +35,7 @@ export {weAreDebugging} from './we-are-debugging'
 export {constants} from './constants'
 const EventEmitter = events.EventEmitter;
 import Timer = NodeJS.Timer;
+import {ErrorCallback} from "async";
 
 const name = ' [suman-utils] ';
 const log = {
@@ -45,6 +45,8 @@ const log = {
   good: console.log.bind(console, chalk.cyan(name)),
   veryGood: console.log.bind(console, chalk.green(name))
 };
+
+export type ErrnoExceptionType = (err: any) => void;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -89,8 +91,10 @@ export const mapToTargetDir = function (item: string): MapToTargetDirResult {
   const projectRoot = process.env.SUMAN_PROJECT_ROOT;
   // note => these values were originally assigned in suman/index.js,
   // were then passed to suman server, which then required this file
-  const testDir = process.env.TEST_DIR;
-  const testSrcDir = process.env.TEST_SRC_DIR;
+  
+  // const testDir = process.env.TEST_DIR;
+  // const testSrcDir = process.env.TEST_SRC_DIR;
+  
   const testTargetDir = process.env.TEST_TARGET_DIR;
   const testTargetDirLength = String(testTargetDir).split(path.sep).length;
   
@@ -140,7 +144,7 @@ export const findApplicablePathsGivenTransform = function (sumanConfig: Object, 
       // after this, we are in subdirectories
       firstPass = false;
       
-      async.eachLimit(items, 3, function (item: string, cb: Function) {
+      async.eachLimit(items as any, 3, function (item: string, cb: Function) {
         
         const fullPath = path.resolve(dir + '/' + item);
         
@@ -159,6 +163,7 @@ export const findApplicablePathsGivenTransform = function (sumanConfig: Object, 
           }
           
           if (stats.isDirectory()) {
+            
             if (String(fullPath).match(/\/node_modules\//)) {
               return cb();
             }
@@ -169,7 +174,7 @@ export const findApplicablePathsGivenTransform = function (sumanConfig: Object, 
           
         });
         
-      }, cb);
+      }, cb as any);
     });
     
   })(dir, function (err: Error) {
@@ -199,14 +204,14 @@ export const runAssertionToCheckForSerialization = function (val: Object): void 
     'here is the data in raw form =>\n' + val + ' and here we have run util.inspect on it =>\n' + util.inspect(val));
 };
 
-export const buildDirsWithMkDirp = function (paths: Array<string>, cb: Function): void {
-  async.each(paths, mkdirp, cb);
+export const buildDirsWithMkDirp = function (paths: Array<string>, cb: ErrorCallback<any>): void {
+  async.each(paths as any, mkdirp, cb);
 };
 
 export const getArrayOfDirsToBuild = function (testTargetPath: string, p: string): string | undefined {
   
   // => p is expected to be a path to a file, not a directory
-  let temp: string;
+  let temp: string = '';
   const l = path.normalize('/' + testTargetPath).split('/').length;
   const items = path.normalize('/' + p).split('/');
   
@@ -228,10 +233,9 @@ export const getArrayOfDirsToBuild = function (testTargetPath: string, p: string
   if (temp) {
     return path.resolve(testTargetPath + '/' + temp);
   }
-  else {
-    //explicit for your pleasure; and so TS does not complain
-    return undefined;
-  }
+  
+  //explicit for your pleasure; and so TS does not complain
+  return undefined;
   
 };
 
@@ -251,22 +255,21 @@ export const checkIfPathAlreadyExistsInList = function (paths: Array<string>, p:
   
 };
 
-export const buildDirs = function (dirs: Array<string>, cb: Function): void {
+export const buildDirs = function (dirs: Array<string>, cb: ErrorCallback<any>): void {
   
   if (dirs.length < 1) {
     return process.nextTick(cb);
   }
   
-  async.eachSeries(dirs, function (item: string, cb: Function): void {
+  async.eachSeries(dirs as any, function (item: string, cb: Function): void {
     
     fs.mkdir(item, function (err: Error) {
       if (err && !String(err.stack).match(/eexist/i)) {
         log.error(err.stack || err);
-        cb(err);
+        return cb(err);
       }
-      else {
-        cb(null);
-      }
+      
+      cb(null);
     });
     
   }, cb);
@@ -329,7 +332,7 @@ export const findSharedPath = function (p1: string, p2: string): string {
     shared.push(one[i]);
     i++;
     if (i > 100) {
-      throw new Error(' => Suman implementation error => first array => ' + one + ', ' +
+      throw new Error('Suman implementation error => first array => ' + one + ', ' +
         'second array => ' + two);
     }
   }
@@ -408,9 +411,12 @@ export const isGeneratorFn = function (fn: Function): boolean {
   if (typeof fn !== 'function') {
     return false;
   }
+  
   let fnStr = toStr.call(fn);
+  
   return ((fnStr === '[object Function]' || fnStr === '[object GeneratorFunction]') && isFnRegex.test(fnToStr.call(fn))
-    || (fn.constructor.name === 'GeneratorFunction' || fn.constructor.displayName === 'GeneratorFunction'));
+    || (fn.constructor &&
+      (fn.constructor.name === 'GeneratorFunction' || (fn.constructor as any).displayName === 'GeneratorFunction')));
   
 };
 
@@ -453,8 +459,8 @@ export const once = function (ctx: Object, fn: Function): Function {
       return fn.apply(ctx, arguments);
     }
     else {
-      _suman.logWarning('Suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
-      err && _suman.logError('warning:', err.stack || util.inspect(err));
+      _suman.log.warning('Suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
+      err && _suman.log.error('warning:', err.stack || util.inspect(err));
     }
   }
 };
@@ -465,8 +471,7 @@ export const onceWithCache = function (fn: Function) {
   return function (cb: Function) {
     
     if (cache) {
-      process.nextTick(cb, null, cache);
-      return;
+      return process.nextTick(cb, null, cache);
     }
     
     fn.call(null, function (err: Error, val: any) {
@@ -488,8 +493,8 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
       return fn.apply(ctx, arguments);
     }
     else {
-      _suman.logWarning('suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
-      err && _suman.logError('warning => ', err.stack || util.inspect(err));
+      _suman.log.warning('suman implementation warning => function was called more than once => ' + fn ? fn.toString() : '');
+      err && _suman.log.error('warning => ', err.stack || util.inspect(err));
     }
   }
 };
@@ -497,7 +502,6 @@ export const onceTO = function (ctx: Object, fn: Function, to: Timer): Function 
 export const getArgumentNames = function (fn: Function | string) {
   
   // this code was borrowed from require('function-arguments') NPM package
-  
   let isString = false;
   
   if (typeof fn === 'function') {
@@ -536,15 +540,17 @@ export const getArgumentNames = function (fn: Function | string) {
 };
 
 export const getCleanErrorString = function (e: any): string {
+  
   if (!e) {
     return String(new Error('falsy value passed to error string extractor.').stack);
   }
-  else if (typeof (e.stack || e) === 'string') {
+  
+  if (typeof (e.stack || e) === 'string') {
     return e.stack || e;
   }
-  else {
-    return util.inspect(e.stack || e);
-  }
+  
+  return util.inspect(e.stack || e);
+  
 };
 
 // create simple alias
@@ -616,21 +622,21 @@ export const onceAsync = function (ctx: Object, fn: Function): Function {
 };
 
 export const customStringify = function (v: any) {
-  let cache: Array<any> = [];
+  const cache = new Map();
   return JSON.stringify(v, function (key, value) {
     if (typeof value === 'object' && value !== null) {
-      if (cache.indexOf(value) !== -1) {
+      if (cache.get(value)) {
         // Circular reference found, discard key
         return;
       }
       // Store value in our collection
-      cache.push(value);
+      cache.set(value, true);
     }
     return value;
   });
 };
 
-export const makePathExecutable = function (runPath: string, cb: Function) {
+export const makePathExecutable = function (runPath: string, cb: ErrnoExceptionType) {
   
   if (runPath) {
     fs.chmod(runPath, 0o777, cb);
@@ -639,35 +645,6 @@ export const makePathExecutable = function (runPath: string, cb: Function) {
     process.nextTick(cb);
   }
 };
-
-// export const getEnvObjFromStr2 = function (str: string): Object {
-//
-//   const ret = {} as any;
-//
-//   String(str).split(/\s+/g).forEach(function (s) {
-//     const kv = String(s).split('=');
-//     if (kv.length > 2) {
-//       throw new Error('String representing env variables is malformed => ' + str);
-//     }
-//
-//     const key = String(kv[0]).trim();
-//     const val = String(kv[1]).trim();
-//
-//     if (key in ret) {
-//       throw new Error('Environment variable was set more than once => ' + str);
-//     }
-//
-//     ret[key] = val;
-//
-//   });
-//
-//   return ret;
-//
-// };
-//
-// export const getEnvObjFromStr = function (str: string): Object {
-//   return qs.parse(String(str), ' ', '=');
-// };
 
 export const checkForEquality = function (arr1: Array<string>, arr2: Array<string>): boolean {
   
@@ -712,60 +689,62 @@ export const findNearestRunAndTransform = function (root: string, pth: string, c
   let upPath: string = pth;
   
   async.whilst(function () {
-    
-    return upPath.length >= root.length;
-    
-  }, function (cb: Function) {
-    
-    async.parallel({
       
-      run: function (cb: Function) {
-        let p = path.resolve(upPath + '/@run.sh');
-        fs.stat(p, function (err, stats) {
-          let z = (stats && stats.isFile()) ? {run: p} : undefined;
-          // z && results.push(z);
-          z && results.unshift(z);
-          cb();
-        });
-      },
+      return upPath.length >= root.length;
       
-      transform: function (cb: Function) {
-        let p = path.resolve(upPath + '/@transform.sh');
-        fs.stat(p, function (err, stats) {
-          let z = (stats && stats.isFile()) ? {transform: p} : undefined;
-          // z && results.push(z);
-          z && results.unshift(z);
-          cb();
-        });
-      },
+    }, function (cb: Function) {
       
-      config: function (cb: Function) {
-        let p = path.resolve(upPath + '/@config.json');
-        fs.stat(p, function (err, stats) {
-          let z = (stats && stats.isFile()) ? {config: p} : undefined;
-          // z && results.push(z);
-          z && results.unshift(z);
-          cb();
-        });
+      async.parallel({
+        
+        run: function (cb: Function) {
+          let p = path.resolve(upPath + '/@run.sh');
+          fs.stat(p, function (err, stats) {
+            let z = (stats && stats.isFile()) ? {run: p} : undefined;
+            // z && results.push(z);
+            z && results.unshift(z);
+            cb();
+          });
+        },
+        
+        transform: function (cb: Function) {
+          let p = path.resolve(upPath + '/@transform.sh');
+          fs.stat(p, function (err, stats) {
+            let z = (stats && stats.isFile()) ? {transform: p} : undefined;
+            // z && results.push(z);
+            z && results.unshift(z);
+            cb();
+          });
+        },
+        
+        config: function (cb: Function) {
+          let p = path.resolve(upPath + '/@config.json');
+          fs.stat(p, function (err, stats) {
+            let z = (stats && stats.isFile()) ? {config: p} : undefined;
+            // z && results.push(z);
+            z && results.unshift(z);
+            cb();
+          });
+        }
+        
+      }, function (err: Error) {
+        upPath = path.resolve(upPath + '/../');
+        cb(err);
+      });
+      
+    },
+    
+    function (err: Error) {
+      if (err) {
+        return cb(err);
       }
       
-    }, function (err: Error) {
-      upPath = path.resolve(upPath + '/../');
-      cb(err);
+      let ret: INearestRunAndTransformRet = results.reduce(function (prev, curr) {
+        return (curr ? Object.assign(prev, curr) : prev);
+      }, {});
+      
+      cb(null, ret);
+      
     });
-    
-  }, function (err: Error) {
-    if (err) {
-      return cb(err);
-    }
-    
-    let ret: INearestRunAndTransformRet = results.reduce(function (prev, curr) {
-      return (curr ? Object.assign(prev, curr) : prev);
-    }, {});
-    
-    cb(null, ret);
-    
-  });
   
 };
 
@@ -787,7 +766,7 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
     });
   };
   
-  (function getMarkers(dir: string, cb: Function) {
+  (function getMarkers(dir: string, cb: ErrorCallback<any>) {
     
     if (sumanHelpersDirRegex.test(dir)) {
       return process.nextTick(cb);
@@ -805,7 +784,7 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
         return path.resolve(dir, item);
       });
       
-      async.eachLimit(items, 5, function (item: string, cb: Function) {
+      async.eachLimit(items as any, 5, function (item: string, cb: ErrorCallback<any>) {
         
         if (sumanHelpersDirRegex.test(item)) {
           return process.nextTick(cb);
@@ -847,8 +826,11 @@ export const findSumanMarkers = function (types: Array<string>, root: string, fi
       
     });
     
-  })(root, function (err: Error) {
+  })
+  (root, function (err: Error) {
+    
     err ? cb(err) : cb(null, map);
+    
   });
   
 };
