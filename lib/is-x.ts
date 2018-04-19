@@ -4,12 +4,14 @@ import {Stream} from "stream";
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 function isBasic(stream: Stream): boolean {
-  return stream !== null && typeof stream === 'object' && typeof stream.pipe === 'function';
+  return stream && typeof stream.pipe === 'function';
 }
 
 function isWritable(stream: any): boolean {
-  return isBasic(stream) && stream.writable !== false && typeof stream._write === 'function' &&
-    typeof stream._writableState === 'object';
+  return isBasic(stream)
+    && stream.writable !== false
+    && typeof stream._write === 'function'
+    && typeof stream._writableState === 'object';
 }
 
 function IsReadable(stream: any): boolean {
