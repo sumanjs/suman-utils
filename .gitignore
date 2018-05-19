@@ -2,9 +2,13 @@
 ### folders
 .idea
 node_modules
+dist/*
 
 ### matching files
 *.log
 *.DS_Store
 
 ### files
+
+### negation
+!dist/README.md

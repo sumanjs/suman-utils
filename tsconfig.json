@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
+    "outDir": "dist",
     "declaration": true,
     "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/suman-types/dts"
     ],
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
@@ -18,16 +20,15 @@
     "experimentalDecorators": true,
     "noUnusedLocals": true,
     "strictNullChecks": true,
-    "newLine": "LF",
     "noUnusedParameters": false,
     "emitDecoratorMetadata": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "compileOnSave": false
   },
   "compileOnSave": false,
-  "exclude": [
-    "test",
-    "node_modules"
+  "include": [
+    "lib"
   ]
 }
