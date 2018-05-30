@@ -20,6 +20,7 @@ LICENSE.md
 *.md
 *.yml
 *.DS_Store
+*.tgz
 
 ### negation
 !*.d.ts

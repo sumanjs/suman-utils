@@ -9,6 +9,7 @@ dist/*
 *.DS_Store
 
 ### files
+*.tgz
 
 ### negation
 !dist/README.md
