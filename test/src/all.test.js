@@ -2,9 +2,10 @@
 
 const suman = require('suman');
 const Test = suman.init(module);
+const su = require('suman-utils');
 
 
-Test.create(function (assert, su, it, stream, Rx) {
+Test.create(function (assert, it, stream, Rx) {
 
   const {
 

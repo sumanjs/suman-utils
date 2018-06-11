@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
 set -e;
-node test/src/all.test.js
+
+npm link suman
+node test/src/find-markers.js
