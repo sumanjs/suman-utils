@@ -2,24 +2,33 @@
 # https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
 
 language: node_js
+
 node_js:
+  - '10'
   - '9'
   - '8'
   - '7'
   - '6'
+
 env:
   - CXX=g++-4.8
+
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-before_install: 'if [[ `npm -v` != 4* ]]; then npm i -g npm@4; fi'
+
+before_install: './scripts/travis/before_install.sh'
 install:
-  - npm install
-script: 'npm install istanbul && npm link && npm link suman-utils && ./node_modules/.bin/istanbul cover test/src/exp.js'
-after_script: 'npm install coveralls && cat coverage/lcov.info | ./node_modules/.bin/coveralls'
+  - './scripts/travis/install.sh'
+script: './scripts/travis/script.sh'
+after_script: './scripts/travis/after_script.sh'
+
+git:
+  depth: 1
+
 notifications:
   email: false
   slack:
