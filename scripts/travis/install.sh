@@ -10,3 +10,5 @@ npm link -f
 
 npm link suman-utils
 
+npm install --loglevel=warn -g \
+ "https://raw.githubusercontent.com/oresoftware/tarballs/master/tgz/oresoftware/suman.tgz?$(date +%s)"
