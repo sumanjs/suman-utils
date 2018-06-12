@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "async": "^2.1.5",
-    "chalk": "^2.1.0",
+    "chalk": "^2.4.1",
     "mkdirp": "^0.5.1",
     "residence": "latest",
     "rimraf": "^2.6.0",
