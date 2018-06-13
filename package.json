@@ -41,7 +41,6 @@
     "@types/immutable": "^3.8.7",
     "@types/node": "^8.0.12",
     "@types/whatwg-fetch": "0.0.33",
-    "node-check-fast": "latest",
     "rxjs": "^5.2.0"
   }
 }
