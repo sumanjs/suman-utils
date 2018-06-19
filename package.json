@@ -3,7 +3,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
-  "version": "0.0.73126",
+  "version": "0.0.73127",
   "scripts": {
     "test": "./scripts/test.sh"
   },
