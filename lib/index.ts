@@ -86,6 +86,10 @@ export const checkStatsIsFile = function (item: string) {
   }
 };
 
+export const flattenDeep = (a: any): Array<any> => {
+  return Array.isArray(a) ? a.reduce( (a, b) => [...flattenDeep(a), ...flattenDeep(b)] , []) : [a];
+};
+
 export const mapToTargetDir = function (item: string): MapToTargetDirResult {
   
   const projectRoot = process.env.SUMAN_PROJECT_ROOT;
