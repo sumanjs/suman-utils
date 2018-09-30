@@ -15,7 +15,8 @@
     "allowUnreachableCode": true,
     "lib": [
       "es2015",
-      "es2016"
+      "es2016",
+      "es2017"
     ],
     "experimentalDecorators": true,
     "noUnusedLocals": true,
@@ -24,11 +25,9 @@
     "emitDecoratorMetadata": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "compileOnSave": false
+    "noFallthroughCasesInSwitch": true
   },
-  "compileOnSave": false,
   "include": [
-    "lib"
+    "src"
   ]
 }

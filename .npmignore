@@ -1,7 +1,9 @@
+
 ### folders
 node_modules
 test
 .idea
+src
 
 ### files
 yarn.lock
@@ -9,11 +11,9 @@ suman.conf.js
 .npmignore
 .gitignore
 .editorconfig
-LICENSE.md
 
 ### matching files
 *.sh
-*.ts
 *.json
 *.txt
 *.log
@@ -21,6 +21,3 @@ LICENSE.md
 *.yml
 *.DS_Store
 *.tgz
-
-### negation
-!*.d.ts
