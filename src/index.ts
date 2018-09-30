@@ -9,7 +9,7 @@ const process = require('suman-browser-polyfills/modules/process');
 const global = require('suman-browser-polyfills/modules/global');
 
 process.on('warning', function (w: any) {
-  console.error('\n', ' => Suman warning => ', (w.stack || w), '\n');
+  console.error('suman-utils warning => ', (w.stack || w), '\n');
 });
 
 //core
@@ -23,12 +23,13 @@ import events = require('events');
 import async = require('async');
 const residence = require('residence');
 const mkdirp = require('mkdirp');
-import chalk from 'chalk';
+
 
 //project
 const _suman: IGlobalSumanObj = global.__suman = (global.__suman || {});
 const isX = require('./is-x');
 const toStr = Object.prototype.toString;
+import log from './logger';
 const fnToStr = Function.prototype.toString;
 const isFnRegex = /^\s*(?:function)?\*/;
 export {weAreDebugging} from './we-are-debugging'
@@ -37,14 +38,6 @@ const EventEmitter = events.EventEmitter;
 import Timer = NodeJS.Timer;
 import {ErrorCallback} from "async";
 
-const name = ' [suman-utils] ';
-const log = {
-  info: console.log.bind(console, chalk.gray.bold(name)),
-  warning: console.error.bind(console, chalk.yellow(name)),
-  error: console.error.bind(console, chalk.red(name)),
-  good: console.log.bind(console, chalk.cyan(name)),
-  veryGood: console.log.bind(console, chalk.green(name))
-};
 
 export type ErrnoExceptionType = (err: any) => void;
 
@@ -57,6 +50,13 @@ export const isObservable = isX.isObservable;
 export const isSubscriber = isX.isSubscriber;
 export const noop = function () {
 };
+
+
+export const r2gSmokeTest = (): boolean => {
+  return true;
+};
+
+
 export const newLine = '\n';
 
 export const isEventEmitter = function (val: any) {
@@ -843,12 +843,6 @@ export const isObject = function (v: any) {
   return v && typeof v === 'object' && !Array.isArray(v);
 };
 
-///////////// support node style imports ////////////////////////////////////////////////
-
-let $exports = module.exports;
-export default $exports;
-
-//////////////////////////////////////////////////////////////////////////////////////////
 
 
 
