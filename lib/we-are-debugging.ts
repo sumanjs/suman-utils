@@ -8,7 +8,7 @@ const process = require('suman-browser-polyfills/modules/process');
 const global = require('suman-browser-polyfills/modules/global');
 
 //core
-const util = require('util');
+import util = require('util');
 
 //project
 const _suman : IGlobalSumanObj = global.__suman = (global.__suman || {});
@@ -33,10 +33,8 @@ const expressions = [
 ];
 
 // at least one of these conditions is true
-const isDebug = expressions.some(function(exp){
-   return execArgs.some(function(x: string){
-     return exp.test(x);
-   });
+const isDebug = expressions.some(exp => {
+   return execArgs.some((x:string) => exp.test(x));
 });
 
 if (IS_SUMAN_DEBUG) {
